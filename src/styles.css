@@ -943,4 +943,33 @@ footer a {
   .detail h1 {
     font-size: 50px;
   }
+  .hero h1,
+.page-hero h1,
+.detail h1,
+.about h2,
+.cta h2,
+.claim h2,
+.card h2 {
+  font-family: "Cinzel Decorative", Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+}
+
+.hero h1 {
+  position: relative;
+  z-index: 2;
+  margin: auto 0;
+  font-size: clamp(68px, 11.5vw, 180px);
+  line-height: 0.76;
+}
+
+.hero h1 em,
+.page-hero h1 em,
+.cta h2 em,
+.claim h2 em {
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.055em;
+}
 }
