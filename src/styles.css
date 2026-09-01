@@ -167,7 +167,7 @@ nav > a.active {
 .detail h1,
 .missing h1 {
   margin: 8vh 0 12px;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Cinzel Decorative", Georgia, serif;
   font-size: clamp(74px, 10.3vw, 198px);
   font-weight: 700;
   line-height: 0.68;
@@ -246,7 +246,7 @@ nav > a.active {
 .about h2,
 .cta h2,
 .claim h2 {
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Cinzel Decorative", Georgia, serif;
   font-size: clamp(50px, 5.6vw, 108px);
   font-weight: 700;
   line-height: 0.8;
@@ -600,7 +600,7 @@ footer a {
 
 .admin h1 {
   margin: 35px 0;
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Cinzel Decorative", Georgia, serif;
   font-size: 70px;
   font-weight: 400;
   line-height: 1;
