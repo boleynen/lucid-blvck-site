@@ -562,7 +562,7 @@ function Admin({ remote, gallery, onChanged, onGalleryChanged }) {
         <div className="admin-heading">
           <div>
             <p className="eyebrow">Secure studio access</p>
-            <h1>Manage content.</h1>
+            <h1>Upload flash</h1>
           </div>
           <button onClick={logout}>
             <LogOut /> Sign out
