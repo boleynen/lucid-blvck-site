@@ -14,13 +14,18 @@ import "./styles.css";
 import {
   databaseConfigured,
   deleteFlash,
+  deleteTattoo,
   fetchFlash,
+  fetchTattoos,
   getSession,
   insertFlash,
+  insertTattoo,
   removeImage,
+  removeTattooImage,
   signIn,
   signOut,
   uploadImage,
+  uploadTattooImage,
 } from "./supabase";
 const BOOK = "https://tally.so/r/686Gdk",
   IG = "https://www.instagram.com/lucidblvck.ttt/";
@@ -57,6 +62,10 @@ async function loadRemote() {
     persisted: true,
   }));
 }
+async function loadGallery() {
+  if (!databaseConfigured) return [];
+  return fetchTattoos();
+}
 function go(path) {
   history.pushState({}, "", path);
   dispatchEvent(new PopStateEvent("popstate"));
@@ -80,7 +89,8 @@ function Link({ to, children, className = "" }) {
 }
 function Header() {
   const [o, setO] = useState(false),
-    onFlash = location.pathname.startsWith("/flash");
+    onFlash = location.pathname.startsWith("/flash"),
+    onGallery = location.pathname === "/tattoo-gallery";
   return (
     <header>
       <Link to="/" className="wordmark">
@@ -92,6 +102,9 @@ function Header() {
       <nav className={o ? "open" : ""}>
         <Link to="/flash" className={onFlash ? "active" : ""}>
           Flash
+        </Link>
+        <Link to="/tattoo-gallery" className={onGallery ? "active" : ""}>
+          Tattoo gallery
         </Link>
         <Link to="/#about">About</Link>
         <a className="nav-cta" href={BOOK}>
@@ -280,6 +293,70 @@ function Flash({ items }) {
     </main>
   );
 }
+function TattooGallery({ items }) {
+  const [selected, setSelected] = useState(null);
+  return (
+    <main id="top">
+      <section className="page-hero gallery-hero">
+        <div className="micro">
+          <span>Healed &amp; fresh work</span>
+          <span>Kasterlee, Belgium</span>
+        </div>
+        <h1>
+          Tattoo <em>gallery.</em>
+        </h1>
+        <Link to="/" className="back">
+          <ChevronLeft /> Back home
+        </Link>
+      </section>
+      <section className="section gallery-section">
+        <div className="section-head">
+          <p className="eyebrow">Selected tattoos</p>
+          <span>{items.length} photos</span>
+        </div>
+        {items.length ? (
+          <div className="tattoo-grid">
+            {items.map((item) => (
+              <button
+                type="button"
+                className="tattoo-card"
+                key={item.id}
+                onClick={() => setSelected(item)}
+              >
+                <img src={item.image_url} alt={item.title} />
+                <span>
+                  <strong>{item.title}</strong>
+                  {item.placement && <small>{item.placement}</small>}
+                </span>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="gallery-empty">New tattoo photographs are coming soon.</p>
+        )}
+      </section>
+      <section className="claim">
+        <p className="eyebrow">Inspired?</p>
+        <h2>
+          Let’s create <em>your tattoo.</em>
+        </h2>
+        <a href={BOOK}>
+          Start your booking <ArrowUpRight />
+        </a>
+      </section>
+      <Footer />
+      {selected && (
+        <div className="lightbox" role="dialog" aria-modal="true" aria-label={selected.title}>
+          <button type="button" onClick={() => setSelected(null)} aria-label="Close photograph">
+            <X />
+          </button>
+          <img src={selected.image_url} alt={selected.title} />
+          <p>{selected.title}{selected.placement ? ` · ${selected.placement}` : ""}</p>
+        </div>
+      )}
+    </main>
+  );
+}
 function Detail({ item }) {
   if (!item) return <Missing />;
   return (
@@ -366,7 +443,7 @@ function Login({ onLogin }) {
     </main>
   );
 }
-function Admin({ remote, onChanged }) {
+function Admin({ remote, gallery, onChanged, onGalleryChanged }) {
   const [session, setSession] = useState(getSession()),
     [form, setForm] = useState({
       title: "",
@@ -375,7 +452,10 @@ function Admin({ remote, onChanged }) {
       status: "Available",
     }),
     [file, setFile] = useState(null),
-    [message, setMessage] = useState("");
+    [message, setMessage] = useState(""),
+    [galleryForm, setGalleryForm] = useState({ title: "", placement: "" }),
+    [galleryFile, setGalleryFile] = useState(null),
+    [galleryMessage, setGalleryMessage] = useState("");
   if (!databaseConfigured)
     return (
       <main className="admin">
@@ -435,6 +515,43 @@ function Admin({ remote, onChanged }) {
       setMessage(error.message);
     }
   };
+  const addGallery = async (e) => {
+    e.preventDefault();
+    const formElement = e.currentTarget;
+    if (!galleryFile) return setGalleryMessage("Choose an image first.");
+    setGalleryMessage("Uploading…");
+    const ext = galleryFile.name.split(".").pop().toLowerCase();
+    const path = `${session.user.id}/${crypto.randomUUID()}.${ext}`;
+    try {
+      const imageUrl = await uploadTattooImage(galleryFile, path);
+      await insertTattoo({
+        title: galleryForm.title || "Tattoo",
+        placement: galleryForm.placement,
+        image_url: imageUrl,
+        storage_path: path,
+      });
+      setGalleryForm({ title: "", placement: "" });
+      setGalleryFile(null);
+      formElement.reset();
+      setGalleryMessage("Tattoo photograph published.");
+      await onGalleryChanged();
+    } catch (error) {
+      await removeTattooImage(path).catch(() => {});
+      setGalleryMessage(error.message);
+    }
+  };
+  const removeGallery = async (item) => {
+    if (!confirm(`Delete ${item.title}?`)) return;
+    setGalleryMessage("Deleting…");
+    try {
+      await deleteTattoo(item.id);
+      await removeTattooImage(item.storage_path);
+      setGalleryMessage("Tattoo photograph deleted.");
+      await onGalleryChanged();
+    } catch (error) {
+      setGalleryMessage(error.message);
+    }
+  };
   const logout = () => {
     signOut();
     setSession(null);
@@ -445,7 +562,7 @@ function Admin({ remote, onChanged }) {
         <div className="admin-heading">
           <div>
             <p className="eyebrow">Secure studio access</p>
-            <h1>Manage flash.</h1>
+            <h1>Manage content.</h1>
           </div>
           <button onClick={logout}>
             <LogOut /> Sign out
@@ -512,6 +629,57 @@ function Admin({ remote, onChanged }) {
             </p>
           )}
         </div>
+        <div className="admin-divider" />
+        <div className="admin-section-title">
+          <p className="eyebrow">Tattoo gallery</p>
+          <h2>Upload finished work.</h2>
+        </div>
+        <form onSubmit={addGallery} className="gallery-form">
+          <label>
+            Title
+            <input
+              name="title"
+              required
+              value={galleryForm.title}
+              onChange={(e) => setGalleryForm({ ...galleryForm, title: e.target.value })}
+              placeholder="Tattoo title"
+            />
+          </label>
+          <label>
+            Placement
+            <input
+              name="placement"
+              value={galleryForm.placement}
+              onChange={(e) => setGalleryForm({ ...galleryForm, placement: e.target.value })}
+              placeholder="For example: upper arm"
+            />
+          </label>
+          <label className="file-field">
+            Photograph
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              required
+              onChange={(e) => setGalleryFile(e.target.files[0])}
+            />
+          </label>
+          <button type="submit">
+            <Upload /> Upload tattoo
+          </button>
+          {galleryMessage && <p className="form-message">{galleryMessage}</p>}
+        </form>
+        <div className="admin-list">
+          {gallery.map((item) => (
+            <div key={item.id}>
+              <img src={item.image_url} alt="" />
+              <span>{item.title}{item.placement ? ` · ${item.placement}` : ""}</span>
+              <button aria-label={`Delete ${item.title}`} onClick={() => removeGallery(item)}>
+                <Trash2 />
+              </button>
+            </div>
+          ))}
+          {!gallery.length && <p className="empty">No tattoo photographs uploaded yet.</p>}
+        </div>
       </section>
     </main>
   );
@@ -526,10 +694,18 @@ function Missing() {
 }
 function App() {
   const [path, setPath] = useState(location.pathname),
-    [remote, setRemote] = useState([]);
+    [remote, setRemote] = useState([]),
+    [gallery, setGallery] = useState([]);
   const refresh = async () => {
     try {
       setRemote(await loadRemote());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  const refreshGallery = async () => {
+    try {
+      setGallery(await loadGallery());
     } catch (e) {
       console.error(e);
     }
@@ -538,6 +714,7 @@ function App() {
     const f = () => setPath(location.pathname);
     addEventListener("popstate", f);
     refresh();
+    refreshGallery();
     return () => removeEventListener("popstate", f);
   }, []);
   const items = [...remote, ...seed];
@@ -547,14 +724,21 @@ function App() {
         <Home items={items} />
       ) : path === "/flash" ? (
         <Flash items={items} />
+      ) : path === "/tattoo-gallery" ? (
+        <TattooGallery items={gallery} />
       ) : path === "/admin/flash" ? (
-        <Admin remote={remote} onChanged={refresh} />
+        <Admin
+          remote={remote}
+          gallery={gallery}
+          onChanged={refresh}
+          onGalleryChanged={refreshGallery}
+        />
       ) : path.startsWith("/flash/") ? (
         <Detail item={items.find((x) => x.id === path.split("/").pop())} />
       ) : (
         <Missing />
       ),
-    [path, remote],
+    [path, remote, gallery],
   );
   return (
     <>
