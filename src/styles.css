@@ -172,7 +172,6 @@ nav > a.active {
   font-weight: 700;
   line-height: 0.68;
   letter-spacing: -0.065em;
-  text-transform: uppercase;
 }
 
 .hero h1 em,
@@ -251,7 +250,6 @@ nav > a.active {
   font-weight: 700;
   line-height: 0.8;
   letter-spacing: -0.055em;
-  text-transform: uppercase;
 }
 
 .about h2 {
@@ -341,7 +339,6 @@ nav > a.active {
   font: 700 clamp(15px, 1.35vw, 25px)/1
     Georgia, "Times New Roman", serif;
   letter-spacing: -0.035em;
-  text-transform: uppercase;
 }
 
 .card span {
@@ -972,13 +969,5 @@ footer a {
   font-style: italic;
   letter-spacing: -0.055em;
 }
-  .hero h1,
-.page-hero h1,
-.detail h1,
-.about h2,
-.cta h2,
-.claim h2,
-.card h2 {
-  text-transform: none;
-}
+
 }
