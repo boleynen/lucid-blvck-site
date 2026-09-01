@@ -196,19 +196,30 @@ function Home({ items }) {
           </a>
         </div>
         <div className="insta-grid">
-          <iframe
-            src="https://www.instagram.com/p/DcqdkFRDCka/embed"
-            title="Instagram 1"
-          />
-          <iframe
-            src="https://www.instagram.com/p/DbQmB57jNM-/embed"
-            title="Instagram 2"
-          />
-          <iframe
-            src="https://www.instagram.com/p/DbJVbl2jNeM/embed"
-            title="Instagram 3"
-          />
-        </div>
+  <div className="insta-frame">
+    <iframe
+      src="https://www.instagram.com/p/DcqdkFRDCka/embed"
+      title="Instagram 1"
+      scrolling="no"
+    />
+  </div>
+
+  <div className="insta-frame">
+    <iframe
+      src="https://www.instagram.com/p/DbQmB57jNM-/embed"
+      title="Instagram 2"
+      scrolling="no"
+    />
+  </div>
+
+  <div className="insta-frame">
+    <iframe
+      src="https://www.instagram.com/p/DbJVbl2jNeM/embed"
+      title="Instagram 3"
+      scrolling="no"
+    />
+  </div>
+</div>
         <a href={IG} className="wide-link">
           Follow on Instagram <ArrowUpRight />
         </a>
