@@ -107,9 +107,14 @@ function Header() {
           Tattoo gallery
         </Link>
         <Link to="/#about">About</Link>
-        <a className="nav-cta" href={BOOK}>
-          Book a tattoo <ArrowUpRight />
-        </a>
+        <a
+          className="nav-cta"
+          href={BOOK}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+  Book a tattoo <ArrowUpRight />
+</a>
       </nav>
     </header>
   );
@@ -244,7 +249,7 @@ function Home({ items }) {
           <br />
           <em>something yours.</em>
         </h2>
-        <a href={BOOK}>
+        <a href={BOOK} target="_blank" rel="noopener noreferrer">
           Start your booking <ArrowUpRight />
         </a>
         <p>Complete the booking form to share your tattoo idea.</p>
@@ -285,7 +290,7 @@ function Flash({ items }) {
         <h2>
           Claim your <em>flash.</em>
         </h2>
-        <a href={BOOK}>
+        <a href={BOOK} target="_blank" rel="noopener noreferrer">
           Start your booking <ArrowUpRight />
         </a>
       </section>
@@ -340,7 +345,7 @@ function TattooGallery({ items }) {
         <h2>
           Let’s create <em>your tattoo.</em>
         </h2>
-        <a href={BOOK}>
+        <a href={BOOK} target="_blank" rel="noopener noreferrer">
           Start your booking <ArrowUpRight />
         </a>
       </section>
@@ -385,7 +390,7 @@ function Detail({ item }) {
               <dd>{item.status}</dd>
             </div>
           </dl>
-          <a href={BOOK} className="book">
+          <a href={BOOK} className="book" target="_blank" rel="noopener noreferrer">
             Book this flash <ArrowUpRight />
           </a>
         </div>
