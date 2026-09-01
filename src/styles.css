@@ -972,4 +972,13 @@ footer a {
   font-style: italic;
   letter-spacing: -0.055em;
 }
+  .hero h1,
+.page-hero h1,
+.detail h1,
+.about h2,
+.cta h2,
+.claim h2,
+.card h2 {
+  text-transform: none;
+}
 }
