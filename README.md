@@ -28,3 +28,24 @@ The admin page stores edits in the current browser only. Do not expose it as a r
 ## Recommended hosting
 
 Netlify is the simplest option: import the GitHub repository, accept the detected settings, add `lucidblvck.be` and `www.lucidblvck.be`, then enter only the DNS records Netlify provides at the domain registrar. Vercel is also supported. GitHub Pages can use the included `CNAME`, but SPA route handling is less convenient.
+
+## Secure flash admin with Supabase
+
+The `/admin/flash` page supports a real email/password login, database records and image uploads. Setup is intentionally locked to an allowlisted administrator.
+
+1. Create a Supabase project.
+2. Open SQL Editor and run `supabase/setup.sql` once.
+3. In Authentication → Users, create your own user with email and password.
+4. Copy that user's UUID. In SQL Editor run:
+
+```sql
+insert into public.admin_users(user_id) values('YOUR-USER-UUID');
+```
+
+5. In Project Settings → API, copy the Project URL and publishable key.
+6. In Netlify → Project configuration → Environment variables, add:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+7. Trigger a new Netlify deploy, then sign in at `/admin/flash`.
+
+Never add a Supabase secret or service-role key to Netlify or the browser project. The SQL policies allow public reading of flash records but restrict uploads, edits and deletes to UUIDs present in `admin_users`.
