@@ -590,16 +590,23 @@ nav > a.active {
 .hero {
   position: relative;
   isolation: isolate;
-  min-height: 100vh;
+  min-height: 50vh;
   overflow: hidden;
 }
 .hero::before {
   content: "";
   position: absolute;
   z-index: -1;
-  inset: 12% 28% 10% 31%;
-  background: url("/images/lucid-blvck-mark-black.png") center/contain no-repeat;
-  opacity: 0.1;
+  width: clamp(1050px, 92vw, 1500px);
+  aspect-ratio: 1;
+  right: 0;
+  bottom: 0;
+  background: url("/images/hero-ornament-v2.jpg") center/contain no-repeat;
+  opacity: 0.28;
+  mix-blend-mode: multiply;
+  transform: translate(50%, 50%);
+  -webkit-mask-image: radial-gradient(circle, #000 0 56%, transparent 76%);
+  mask-image: radial-gradient(circle, #000 0 56%, transparent 76%);
 }
 .micro,
 .section-head {
@@ -613,11 +620,46 @@ nav > a.active {
 .missing h1 {
   font-family: "Cinzel Decorative", Georgia, serif;
 
-  font-size: clamp(74px, 10.3vw, 198px);
+  font-size: clamp(32px, 3.8vw, 64px);
   font-weight: 700;
   line-height: 0.68;
   letter-spacing: -0.065em;
   margin: 8vh 0 12px;
+}
+.hero h1 {
+  max-width: 1000px;
+  font-size: clamp(28px, 3.2vw, 56px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-top: 6vh;
+}
+.hero-title {
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 2.2vw, 38px);
+}
+.hero-title > span {
+  white-space: nowrap;
+}
+.hero-title > i {
+  display: block;
+  width: 2px;
+  height: 1.35em;
+  flex: 0 0 2px;
+  background: var(--accent);
+  transform: rotate(8deg);
+}
+.hero-title > em {
+  display: block;
+  color: var(--ink);
+  -webkit-text-stroke: 0;
+  font-family: Inter, Arial, sans-serif;
+  font-size: clamp(11px, 1vw, 15px);
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 .hero h1 em,
 .page-hero h1 em,
@@ -683,7 +725,7 @@ nav > a.active {
 .cta h2,
 .claim h2 {
   font-family: "Cinzel Decorative", Georgia, serif;
-  font-size: clamp(50px, 5.6vw, 108px);
+  font-size: clamp(30px, 3.2vw, 56px);
   font-weight: 700;
   line-height: 0.8;
   letter-spacing: -0.055em;
@@ -837,7 +879,7 @@ footer img {
   border-bottom: 1px solid var(--line);
 }
 .page-hero h1 {
-  font-size: clamp(72px, 9vw, 172px);
+  font-size: clamp(32px, 3.8vw, 64px);
   margin: 5vh 0 25px;
 }
 .page-hero .back {
@@ -873,7 +915,7 @@ footer img {
   margin-top: 75px;
 }
 .detail h1 {
-  font-size: clamp(62px, 7.2vw, 138px);
+  font-size: clamp(32px, 3.8vw, 64px);
   line-height: 0.76;
   margin: 20px 0 48px;
   overflow-wrap: anywhere;
@@ -912,7 +954,7 @@ footer img {
 
 .about figure {
   position: relative;
-  width: 90%;
+  width: 82%;
   margin: 0;
   overflow: visible;
 }
@@ -976,16 +1018,37 @@ footer img {
     padding: 90px 20px 28px;
   }
   .hero {
-    min-height: 710px;
+    min-height: 420px;
   }
   .hero::before {
-    inset: 18% 3% 16%;
+    width: 900px;
+    opacity: 0.2;
   }
   .hero h1,
   .page-hero h1 {
-    font-size: clamp(62px, 20vw, 100px);
+    font-size: clamp(30px, 8.5vw, 42px);
     line-height: 0.72;
     margin-top: 15vh;
+  }
+  .hero h1 {
+    font-size: clamp(27px, 7.5vw, 40px);
+    line-height: 1;
+    margin-top: 9vh;
+  }
+  .hero-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .hero-title > i {
+    width: 64px;
+    height: 2px;
+    flex-basis: 2px;
+    transform: rotate(-2deg);
+  }
+  .hero-title > em {
+    font-size: 11px;
+    white-space: normal;
   }
   .hero > p {
     font-size: 10px;
@@ -1006,8 +1069,11 @@ footer img {
     gap: 50px;
     margin-top: 45px;
   }
+  .about figure {
+    width: 88%;
+  }
   .about h2 {
-    font-size: 44px;
+    font-size: 34px;
   }
   .about-grid > div > p {
     font-size: 14px;
@@ -1034,7 +1100,7 @@ footer img {
   }
   .cta h2,
   .claim h2 {
-    font-size: 47px;
+    font-size: 36px;
     max-width: 100%;
     margin-bottom: 110px;
   }
@@ -1067,7 +1133,7 @@ footer img {
     margin-top: 45px;
   }
   .detail h1 {
-    font-size: 58px;
+    font-size: 40px;
   }
   .detail-image {
     height: auto;

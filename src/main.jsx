@@ -149,8 +149,10 @@ function Home({ items }) {
           <span>Kasterlee, Belgium</span>
           <span>Private studio · Appointment only</span>
         </div>
-        <h1>
-          Custom <em>dark work.</em>
+        <h1 className="hero-title">
+          <span>Lucid Blvck</span>
+          <i aria-hidden="true" />
+          <em>custom tattooing</em>
         </h1>
         <p>
           Blackwork, illustrative
@@ -181,7 +183,6 @@ function Home({ items }) {
               blackwork, illustrative and ornamental work.
             </p>
             <p>My style is inspired by darker imagery and organic shapes.</p>
-        
             <p>
               I work from a private studio in Kasterlee, by appointment only.
               This allows me to offer a calm, relaxed and personal setting, with
