@@ -111,7 +111,7 @@ function Header({ cartCount = 0, onCartOpen }) {
         <div className="shop-brand">
           <Link to="/shop" className="wordmark">LUCID ENTOM</Link>
           <span aria-hidden="true">/</span>
-          <span>Entomological art</span>
+          <span>Original artwork</span>
           <span aria-hidden="true">/</span>
           <span>By Lucid Blvck</span>
         </div>
