@@ -654,11 +654,12 @@ nav > a.active {
   content: "";
   position: absolute;
   z-index: -1;
-  top: -12%;
-  right: -9vw;
-  bottom: -25%;
-  width: min(85vw, 1200px);
-  background: url("/images/lucid-entom-hero.png") center right/contain no-repeat;
+  top: 50%;
+  right: -18%;
+  width: 120%;
+  height: 240%;
+  transform: translateY(-50%);
+  background: url("/images/lucid-entom-img-3171.png") center right/auto 100% no-repeat;
   filter: invert(1) grayscale(1) contrast(1.35);
   mix-blend-mode: screen;
   opacity: .38;
@@ -815,7 +816,7 @@ nav > a.active {
   .shop-entry { width: 100%; justify-content: space-between; }
   .shop-cart-trigger { width: 100%; justify-content: space-between; }
   .shop-hero { min-height: 420px; padding: 90px 20px 28px; }
-  .shop-hero::before { top: -8%; right: -45%; bottom: -20%; width: 150vw; opacity: .26; }
+  .shop-hero::before { right: -65%; width: 200%; height: 230%; opacity: .26; }
   .shop-kicker { top: 88px; left: 20px; right: 20px; }
   .shop-hero h1 { font-size: clamp(30px, 8vw, 42px); line-height: 1; }
   .shop-scroll { right: 20px; bottom: 30px; }
