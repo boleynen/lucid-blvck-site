@@ -7,7 +7,8 @@ Exportable React/Vite reconstruction of the published Lucid Blvck ChatGPT Site.
 - Home, responsive navigation, about, Instagram embeds and booking links.
 - Complete flash overview with all 15 recovered original images.
 - Individual flash pages with hover zoom.
-- A clearly labelled local `/admin/flash` prototype.
+- A secured `/admin/flash` dashboard for flash, tattoo gallery and shop products.
+- **Lucid Entom** shop at `/shop`, with a separate visual identity, cart and Stripe Checkout.
 - Netlify, Vercel and GitHub Pages custom-domain files for `lucidblvck.be`.
 
 ## Run locally
@@ -48,4 +49,26 @@ insert into public.admin_users(user_id) values('YOUR-USER-UUID');
    - `VITE_SUPABASE_PUBLISHABLE_KEY`
 7. Trigger a new Netlify deploy, then sign in at `/admin/flash`.
 
-Never add a Supabase secret or service-role key to Netlify or the browser project. The SQL policies allow public reading of flash records but restrict uploads, edits and deletes to UUIDs present in `admin_users`.
+Never expose a Supabase secret/service-role key through a variable beginning with `VITE_`: those variables are bundled into the browser. The SQL policies allow public reading of flash records but restrict uploads, edits and deletes to UUIDs present in `admin_users`.
+
+## Lucid Entom shop setup
+
+The shop treats each insect artwork as a physical product. Stock defaults to one, but can be changed in the admin dashboard.
+
+1. In Supabase SQL Editor, run `supabase/shop-setup.sql` once.
+2. In Netlify → Project configuration → Environment variables, add:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_PUBLISHABLE_KEY`
+   - `SUPABASE_SECRET_KEY` (server-only; a legacy `SUPABASE_SERVICE_ROLE_KEY` also works)
+   - `STRIPE_SECRET_KEY`
+   - `STRIPE_WEBHOOK_SECRET`
+3. In Stripe Workbench → Webhooks, create an endpoint at:
+
+```text
+https://lucidblvck.be/.netlify/functions/lucid-stripe-webhook
+```
+
+Subscribe it to `checkout.session.completed` and `checkout.session.async_payment_succeeded`, then copy its signing secret into `STRIPE_WEBHOOK_SECRET` in Netlify.
+4. Redeploy the site. Add products at `/admin/flash`; customers can then buy them at `/shop`.
+
+Prices and stock are always read again on the server before Stripe Checkout is created. Stripe and Supabase secret keys are used only by the Netlify functions and must never be added to frontend code or committed to Git.

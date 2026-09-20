@@ -18,3 +18,9 @@ export async function uploadTattooImage(file,path){await fetch(`${url}/storage/v
 export async function removeTattooImage(path){return fetch(`${url}/storage/v1/object/tattoo-images/${path}`,{method:'DELETE',headers:headers()}).then(json)}
 export async function insertTattoo(record){return fetch(`${url}/rest/v1/tattoo_gallery`,{method:'POST',headers:headers(getSession()?.access_token,{'Content-Type':'application/json',Prefer:'return=minimal'}),body:JSON.stringify(record)}).then(async r=>{if(!r.ok)await json(r)})}
 export async function deleteTattoo(id){return fetch(`${url}/rest/v1/tattoo_gallery?id=eq.${encodeURIComponent(id)}`,{method:'DELETE',headers:headers(getSession()?.access_token,{Prefer:'return=minimal'})}).then(async r=>{if(!r.ok)await json(r)})}
+
+export async function fetchShopProducts(){return fetch(`${url}/rest/v1/shop_products?select=*&active=eq.true&order=sort_order.desc,created_at.desc`,{headers:headers()}).then(json)}
+export async function uploadShopImage(file,path){await fetch(`${url}/storage/v1/object/shop-images/${path}`,{method:'POST',headers:headers(getSession()?.access_token,{'Content-Type':file.type,'x-upsert':'false'}),body:file}).then(json);return`${url}/storage/v1/object/public/shop-images/${path}`}
+export async function removeShopImage(path){return fetch(`${url}/storage/v1/object/shop-images/${path}`,{method:'DELETE',headers:headers(getSession()?.access_token)}).then(json)}
+export async function insertShopProduct(record){return fetch(`${url}/rest/v1/shop_products`,{method:'POST',headers:headers(getSession()?.access_token,{'Content-Type':'application/json',Prefer:'return=minimal'}),body:JSON.stringify(record)}).then(async r=>{if(!r.ok)await json(r)})}
+export async function deleteShopProduct(id){return fetch(`${url}/rest/v1/shop_products?id=eq.${encodeURIComponent(id)}`,{method:'DELETE',headers:headers(getSession()?.access_token,{Prefer:'return=minimal'})}).then(async r=>{if(!r.ok)await json(r)})}

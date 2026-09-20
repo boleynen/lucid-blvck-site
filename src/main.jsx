@@ -9,22 +9,29 @@ import {
   Trash2,
   LogOut,
   Upload,
+  ShoppingBag,
 } from "lucide-react";
 import "./styles.css";
+import { CartDrawer, Shop, ShopProduct, ShopSuccess } from "./shop";
 import {
   databaseConfigured,
   deleteFlash,
+  deleteShopProduct,
   deleteTattoo,
   fetchFlash,
+  fetchShopProducts,
   fetchTattoos,
   getSession,
   insertFlash,
+  insertShopProduct,
   insertTattoo,
   removeImage,
+  removeShopImage,
   removeTattooImage,
   signIn,
   signOut,
   uploadImage,
+  uploadShopImage,
   uploadTattooImage,
 } from "./supabase";
 const BOOK = "https://tally.so/r/686Gdk",
@@ -66,6 +73,10 @@ async function loadGallery() {
   if (!databaseConfigured) return [];
   return fetchTattoos();
 }
+async function loadProducts() {
+  if (!databaseConfigured) return [];
+  return fetchShopProducts();
+}
 function go(path) {
   history.pushState({}, "", path);
   dispatchEvent(new PopStateEvent("popstate"));
@@ -87,34 +98,39 @@ function Link({ to, children, className = "" }) {
     </a>
   );
 }
-function Header() {
+function Header({ cartCount = 0, onCartOpen }) {
   const [o, setO] = useState(false),
     onFlash = location.pathname.startsWith("/flash"),
-    onGallery = location.pathname === "/tattoo-gallery";
+    onGallery = location.pathname === "/tattoo-gallery",
+    onShop = location.pathname.startsWith("/shop") || location.pathname.startsWith("/checkout");
   return (
-    <header>
+    <header className={onShop ? "shop-site-header" : ""}>
       <Link to="/" className="wordmark">
-        LUCID BLVCK<sup>®</sup>
+        {onShop ? <>LUCID ENTOM</> : <>LUCID BLVCK<sup>®</sup></>}
       </Link>
       <button className="menu" onClick={() => setO(!o)} aria-label="Menu">
         {o ? <X /> : <Menu />}
       </button>
       <nav className={o ? "open" : ""}>
-        <Link to="/flash" className={onFlash ? "active" : ""}>
-          Flash
-        </Link>
-        <Link to="/tattoo-gallery" className={onGallery ? "active" : ""}>
-          Tattoo gallery
-        </Link>
-        <Link to="/#about">About</Link>
-        <a
+        {!onShop && <>
+          <Link to="/flash" className={onFlash ? "active" : ""}>Flash</Link>
+          <Link to="/tattoo-gallery" className={onGallery ? "active" : ""}>Tattoo gallery</Link>
+          <Link to="/#about">About</Link>
+          <Link to="/shop" className="shop-entry">Lucid Entom <ArrowUpRight /></Link>
+        </>}
+        <button type="button" className="shop-cart-trigger" onClick={onCartOpen}>
+          <ShoppingBag /> Cart <span>{cartCount}</span>
+        </button>
+        {onShop ? (
+          <Link to="/" className="shop-entry active">Lucid Blvck <ArrowUpRight /></Link>
+        ) : <a
           className="nav-cta"
           href={BOOK}
           target="_blank"
           rel="noopener noreferrer"
         >
-  Book a tattoo <ArrowUpRight />
-</a>
+          Book a tattoo <ArrowUpRight />
+        </a>}
       </nav>
     </header>
   );
@@ -449,7 +465,7 @@ function Login({ onLogin }) {
     </main>
   );
 }
-function Admin({ remote, gallery, onChanged, onGalleryChanged }) {
+function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProductsChanged }) {
   const [session, setSession] = useState(getSession()),
     [form, setForm] = useState({
       title: "",
@@ -461,7 +477,10 @@ function Admin({ remote, gallery, onChanged, onGalleryChanged }) {
     [message, setMessage] = useState(""),
     [galleryForm, setGalleryForm] = useState({ title: "", placement: "" }),
     [galleryFile, setGalleryFile] = useState(null),
-    [galleryMessage, setGalleryMessage] = useState("");
+    [galleryMessage, setGalleryMessage] = useState(""),
+    [shopForm, setShopForm] = useState({ title: "", description: "", price: "", dimensions: "", shipping: "", stock: "1" }),
+    [shopFile, setShopFile] = useState(null),
+    [shopMessage, setShopMessage] = useState("");
   if (!databaseConfigured)
     return (
       <main className="admin">
@@ -556,6 +575,42 @@ function Admin({ remote, gallery, onChanged, onGalleryChanged }) {
       await onGalleryChanged();
     } catch (error) {
       setGalleryMessage(error.message);
+    }
+  };
+  const addShopProduct = async (e) => {
+    e.preventDefault();
+    const formElement = e.currentTarget;
+    if (!shopFile) return setShopMessage("Choose an image first.");
+    const priceCents = Math.round(Number(shopForm.price.replace(",", ".")) * 100);
+    const shippingCents = Math.round(Number(shopForm.shipping.replace(",", ".")) * 100);
+    if (!Number.isInteger(priceCents) || priceCents < 50) return setShopMessage("Enter a valid price.");
+    if (!Number.isInteger(shippingCents) || shippingCents < 0) return setShopMessage("Enter valid shipping costs.");
+    setShopMessage("Uploading…");
+    const ext = shopFile.name.split(".").pop().toLowerCase();
+    const storagePath = `${session.user.id}/${crypto.randomUUID()}.${ext}`;
+    try {
+      const imageUrl = await uploadShopImage(shopFile, storagePath);
+      await insertShopProduct({ title: shopForm.title, description: shopForm.description, price_cents: priceCents, dimensions: shopForm.dimensions, shipping_cents: shippingCents, stock_quantity: Math.max(0, Number(shopForm.stock) || 0), image_url: imageUrl, storage_path: storagePath, active: true });
+      setShopForm({ title: "", description: "", price: "", dimensions: "", shipping: "", stock: "1" });
+      setShopFile(null);
+      formElement.reset();
+      setShopMessage("Object published.");
+      await onProductsChanged();
+    } catch (error) {
+      await removeShopImage(storagePath).catch(() => {});
+      setShopMessage(error.message);
+    }
+  };
+  const removeShopProduct = async (item) => {
+    if (!confirm(`Delete ${item.title}?`)) return;
+    setShopMessage("Deleting…");
+    try {
+      await deleteShopProduct(item.id);
+      await removeShopImage(item.storage_path);
+      setShopMessage("Object deleted.");
+      await onProductsChanged();
+    } catch (error) {
+      setShopMessage(error.message);
     }
   };
   const logout = () => {
@@ -686,6 +741,26 @@ function Admin({ remote, gallery, onChanged, onGalleryChanged }) {
           ))}
           {!gallery.length && <p className="empty">No tattoo photographs uploaded yet.</p>}
         </div>
+        <div className="admin-divider" />
+        <div className="admin-section-title">
+          <p className="eyebrow">Lucid Entom shop</p>
+          <h2>Publish an insect work.</h2>
+        </div>
+        <form onSubmit={addShopProduct} className="flash-form shop-admin-form">
+          <label>Title<input required value={shopForm.title} onChange={(e) => setShopForm({ ...shopForm, title: e.target.value })} placeholder="Object title" /></label>
+          <label>Price (€)<input required inputMode="decimal" value={shopForm.price} onChange={(e) => setShopForm({ ...shopForm, price: e.target.value })} placeholder="125,00" /></label>
+          <label>Stock<input required type="number" min="0" max="20" value={shopForm.stock} onChange={(e) => setShopForm({ ...shopForm, stock: e.target.value })} /></label>
+          <label>Dimensions<input required value={shopForm.dimensions} onChange={(e) => setShopForm({ ...shopForm, dimensions: e.target.value })} placeholder="30 × 40 cm" /></label>
+          <label>Shipping (€)<input required inputMode="decimal" value={shopForm.shipping} onChange={(e) => setShopForm({ ...shopForm, shipping: e.target.value })} placeholder="9,50" /></label>
+          <label className="wide">Description<textarea required rows="4" value={shopForm.description} onChange={(e) => setShopForm({ ...shopForm, description: e.target.value })} placeholder="Materials, process and story…" /></label>
+          <label className="file-field">Product image<input type="file" accept="image/jpeg,image/png,image/webp" required onChange={(e) => setShopFile(e.target.files[0])} /></label>
+          <button type="submit"><Upload /> Publish object</button>
+          {shopMessage && <p className="form-message">{shopMessage}</p>}
+        </form>
+        <div className="admin-list">
+          {products.map((item) => <div key={item.id}><img src={item.image_url} alt="" /><span>{item.title} · €{(item.price_cents / 100).toFixed(2)} · Stock {item.stock_quantity}</span><button aria-label={`Delete ${item.title}`} onClick={() => removeShopProduct(item)}><Trash2 /></button></div>)}
+          {!products.length && <p className="empty">No shop objects published yet.</p>}
+        </div>
       </section>
     </main>
   );
@@ -701,7 +776,10 @@ function Missing() {
 function App() {
   const [path, setPath] = useState(location.pathname),
     [remote, setRemote] = useState([]),
-    [gallery, setGallery] = useState([]);
+    [gallery, setGallery] = useState([]),
+    [products, setProducts] = useState([]),
+    [cartOpen, setCartOpen] = useState(false),
+    [cart, setCart] = useState(() => { try { return JSON.parse(localStorage.getItem("lucid-entom-cart")) || []; } catch { return []; } });
   const refresh = async () => {
     try {
       setRemote(await loadRemote());
@@ -716,13 +794,29 @@ function App() {
       console.error(e);
     }
   };
+  const refreshProducts = async () => {
+    try {
+      setProducts(await loadProducts());
+    } catch (e) {
+      console.error(e);
+    }
+  };
   useEffect(() => {
     const f = () => setPath(location.pathname);
     addEventListener("popstate", f);
     refresh();
     refreshGallery();
+    refreshProducts();
     return () => removeEventListener("popstate", f);
   }, []);
+  useEffect(() => { localStorage.setItem("lucid-entom-cart", JSON.stringify(cart)); }, [cart]);
+  function addToCart(product) {
+    if (product.stock_quantity < 1) return;
+    setCart((current) => current.some((item) => item.id === product.id)
+      ? current.map((item) => item.id === product.id ? { ...item, quantity: Math.min(item.quantity + 1, product.stock_quantity) } : item)
+      : [...current, { ...product, quantity: 1 }]);
+    setCartOpen(true);
+  }
   const items = [...remote, ...seed];
   const page = useMemo(
     () =>
@@ -732,24 +826,33 @@ function App() {
         <Flash items={items} />
       ) : path === "/tattoo-gallery" ? (
         <TattooGallery items={gallery} />
+      ) : path === "/shop" ? (
+        <Shop products={products} Link={Link} onAdd={addToCart} />
+      ) : path === "/checkout/success" ? (
+        <ShopSuccess Link={Link} onClear={() => setCart([])} />
       ) : path === "/admin/flash" ? (
         <Admin
           remote={remote}
           gallery={gallery}
+          products={products}
           onChanged={refresh}
           onGalleryChanged={refreshGallery}
+          onProductsChanged={refreshProducts}
         />
+      ) : path.startsWith("/shop/") ? (
+        <ShopProduct product={products.find((x) => x.id === path.split("/").pop())} Link={Link} onAdd={addToCart} />
       ) : path.startsWith("/flash/") ? (
         <Detail item={items.find((x) => x.id === path.split("/").pop())} />
       ) : (
         <Missing />
       ),
-    [path, remote, gallery],
+    [path, remote, gallery, products, cart],
   );
   return (
     <>
-      <Header />
+      <Header cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} onCartOpen={() => setCartOpen(true)} />
       {page}
+      <CartDrawer open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onChange={(id, quantity) => setCart((current) => quantity < 1 ? current.filter((item) => item.id !== id) : current.map((item) => item.id === id ? { ...item, quantity: Math.min(quantity, item.stock_quantity) } : item))} onRemove={(id) => setCart((current) => current.filter((item) => item.id !== id))} />
     </>
   );
 }
