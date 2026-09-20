@@ -107,9 +107,17 @@ function Header({ cartCount = 0, onCartOpen }) {
     onShop = location.pathname.startsWith("/shop") || location.pathname.startsWith("/checkout");
   return (
     <header className={onShop ? "shop-site-header" : ""}>
-      <Link to="/" className="wordmark">
-        {onShop ? <>LUCID ENTOM</> : <>LUCID BLVCK<sup>®</sup></>}
-      </Link>
+      {onShop ? (
+        <div className="shop-brand">
+          <Link to="/shop" className="wordmark">LUCID ENTOM</Link>
+          <span aria-hidden="true">/</span>
+          <span>Entomological art</span>
+          <span aria-hidden="true">/</span>
+          <span>By Lucid Blvck</span>
+        </div>
+      ) : (
+        <Link to="/" className="wordmark">LUCID BLVCK<sup>®</sup></Link>
+      )}
       <button className="menu" onClick={() => setO(!o)} aria-label="Menu">
         {o ? <X /> : <Menu />}
       </button>

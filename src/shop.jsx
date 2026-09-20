@@ -10,17 +10,6 @@ export const euro = (cents = 0) => new Intl.NumberFormat("en-BE", {
 export function Shop({ products, Link, onAdd }) {
   return (
     <main className="objects-shop" id="top">
-      <section className="shop-hero">
-        <div className="shop-kicker">
-          <span>Entomological art</span>
-          <span>By Lucid Blvck</span>
-        </div>
-        <p className="shop-edition">One of one · Made by hand</p>
-        <h1>Lucid <em>Entom</em></h1>
-        <p className="shop-intro">Original insect works—drawn, cut and assembled as individual pieces. Once gone, they are gone.</p>
-        <a href="#collection" className="shop-scroll">Enter the collection ↓</a>
-      </section>
-
       <section className="shop-collection" id="collection">
         <div className="shop-section-head">
           <div><span>01</span><p>Available specimens</p></div>

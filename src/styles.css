@@ -652,6 +652,19 @@ nav > a.active {
   cursor: pointer;
 }
 .shop-cart-trigger span { min-width: 16px; text-align: center; }
+.shop-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+.shop-brand > span {
+  color: #0d0d0c99;
+  font-size: 8px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
 
 .objects-shop {
   --shop-ink: #070206;
@@ -665,57 +678,12 @@ nav > a.active {
   color: var(--shop-paper);
   font-family: Inter, Arial, sans-serif;
 }
-.shop-hero {
-  min-height: 50vh;
-  position: relative;
-  isolation: isolate;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 105px var(--pad) 38px;
-  overflow: hidden;
-  border-bottom: 1px solid #d8e2dc2b;
-  background:
-    radial-gradient(circle at 83% 52%, #bc8da029 0 13%, transparent 42%),
-    repeating-linear-gradient(90deg, transparent 0 calc(25% - 1px), #d8e2dc0b calc(25% - 1px) 25%),
-    var(--shop-ink);
-}
-.shop-hero::before {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  top: 50%;
-  right: -18%;
-  width: 120%;
-  height: 240%;
-  transform: translateY(-50%);
-  background: url("/images/lucid-entom-img-3171.png") center right/auto 100% no-repeat;
-  filter: invert(1) grayscale(1) contrast(1.35);
-  mix-blend-mode: screen;
-  opacity: .38;
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 48%);
-  mask-image: linear-gradient(to right, transparent 0%, #000 48%);
-  pointer-events: none;
-}
-.shop-hero::after {
-  content: none;
-}
-.shop-kicker,
 .shop-section-head,
 .shop-card-copy,
 .shop-product-copy dl > div {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-.shop-kicker {
-  position: absolute;
-  top: 100px;
-  left: var(--pad);
-  right: var(--pad);
-  font-size: 9px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
 }
 .shop-edition,
 .shop-section-head,
@@ -727,20 +695,7 @@ nav > a.active {
   text-transform: uppercase;
 }
 .shop-edition { color: var(--shop-acid); margin: 0 0 20px; }
-.shop-hero h1 {
-  position: relative;
-  z-index: 1;
-  margin: 0;
-  max-width: 760px;
-  font: 400 clamp(36px, 3.2vw, 56px)/.95 "Nightmare Pills", Georgia, serif;
-  letter-spacing: -.04em;
-  text-transform: uppercase;
-  text-shadow: 0 2px 18px var(--shop-ink), 0 0 40px var(--shop-ink);
-}
-.shop-hero h1 em { display: inline; color: var(--shop-paper); -webkit-text-stroke: 0; font-style: normal; }
-.shop-intro { max-width: 460px; margin: 36px 0 0; color: #d8e2dcb5; font: 15px/1.7 Inter, sans-serif; }
-.shop-scroll { position: absolute; right: var(--pad); bottom: 55px; border-bottom: 1px solid var(--shop-acid); padding: 0 0 7px; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; }
-.shop-collection { padding: 90px var(--pad) 130px; }
+.shop-collection { padding: 138px var(--pad) 130px; }
 .shop-section-head { padding-bottom: 18px; margin-bottom: 40px; border-bottom: 1px solid #d8e2dc2b; }
 .shop-section-head div { display: flex; align-items: center; gap: 16px; }
 .shop-section-head span { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid var(--shop-acid); color: var(--shop-acid); }
@@ -840,14 +795,13 @@ nav > a.active {
   .shop-admin-form { grid-template-columns: 1fr 1fr !important; }
 }
 @media (max-width: 760px) {
+  .shop-site-header { padding-inline: 20px; }
+  .shop-brand { gap: 7px; }
+  .shop-brand .wordmark { font-size: 12px; }
+  .shop-brand > span { font-size: 6px; letter-spacing: .1em; }
   .shop-entry { width: 100%; justify-content: space-between; }
   .shop-cart-trigger { width: 100%; justify-content: space-between; }
-  .shop-hero { min-height: 420px; padding: 90px 20px 28px; }
-  .shop-hero::before { right: -65%; width: 200%; height: 230%; opacity: .26; }
-  .shop-kicker { top: 88px; left: 20px; right: 20px; }
-  .shop-hero h1 { font-size: clamp(30px, 8vw, 42px); line-height: 1; }
-  .shop-scroll { right: 20px; bottom: 30px; }
-  .shop-collection { padding: 70px 20px 90px; }
+  .shop-collection { padding: 110px 20px 90px; }
   .shop-section-head > p { display: none; }
   .shop-grid { grid-template-columns: 1fr; }
   .shop-note { padding: 75px 20px; }
