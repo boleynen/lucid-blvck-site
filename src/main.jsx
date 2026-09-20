@@ -418,7 +418,7 @@ function Detail({ item }) {
     </main>
   );
 }
-function Login({ onLogin }) {
+function Login({ onLogin, sessionExpired = false }) {
   const [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
     [message, setMessage] = useState("");
@@ -437,6 +437,7 @@ function Login({ onLogin }) {
       <section>
         <p className="eyebrow">Private studio access</p>
         <h1>Admin login.</h1>
+        {sessionExpired && <p role="status">Your session has expired. Sign in again to continue; your form and selected photos are still here.</p>}
         <form onSubmit={submit} className="login-form">
           <label>
             Email
@@ -498,7 +499,13 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     [shopPhotos, setShopPhotos] = useState([]),
     [shopCover, setShopCover] = useState(""),
     [shopUploading, setShopUploading] = useState(false),
-    [shopMessage, setShopMessage] = useState("");
+    [shopMessage, setShopMessage] = useState(""),
+    [sessionExpired, setSessionExpired] = useState(false);
+  useEffect(() => {
+    const expired = () => { setSession(null); setSessionExpired(true); };
+    window.addEventListener("lucid-session-expired", expired);
+    return () => window.removeEventListener("lucid-session-expired", expired);
+  }, []);
   if (!databaseConfigured)
     return (
       <main className="admin">
@@ -512,7 +519,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
         </section>
       </main>
     );
-  if (!session) return <Login onLogin={setSession} />;
+  if (!session) return <Login sessionExpired={sessionExpired} onLogin={(next) => { setSession(next); setSessionExpired(false); }} />;
   const change = (e) => setForm({ ...form, [e.target.name]: e.target.value });
   const add = async (e) => {
     e.preventDefault();

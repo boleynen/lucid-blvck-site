@@ -32,7 +32,14 @@ export async function publishPhotos({ photos, coverId, userId, upload, remove, i
       const storage_path = `${userId}/${crypto.randomUUID()}.${extension}`;
       attemptedPaths.push(storage_path);
       onProgress(`Uploading photo ${uploaded.length + 1} of ${photos.length}…`);
-      const image_url = await upload(file, storage_path);
+      let image_url;
+      try {
+        image_url = await upload(file, storage_path);
+      } catch (error) {
+        // A rejected upload never created an object; do not report failed cleanup for it.
+        if (error.status >= 400 && error.status < 500) attemptedPaths.pop();
+        throw error;
+      }
       uploaded.push({ image_url, storage_path });
     }
     const cover = uploaded[coverIndex];

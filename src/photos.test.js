@@ -44,6 +44,13 @@ test('rejects invalid files and invalid cover before uploading', async () => {
   await assert.rejects(publishPhotos({ ...options, photos: [{ id: '1', file: { type: 'text/plain', size: 100 } }] }), /JPG/);
 });
 
+test('does not try to clean up an upload rejected before creating a file', async () => {
+  await assert.rejects(publishPhotos({ photos, coverId: '1', userId: 'admin', record: {},
+    upload: async () => { throw Object.assign(new Error('Please sign in again'), { status: 401 }); },
+    remove: async () => assert.fail('No file to clean up'), insert: async () => assert.fail('Must not publish') }),
+  error => error.message === 'Please sign in again');
+});
+
 test('removes the cover and album files once, including legacy records', async () => {
   const removed = [];
   await removeRecordPhotos({ storage_path: 'cover', images: [{ storage_path: 'cover' }, { storage_path: 'extra' }] }, async path => removed.push(path));
