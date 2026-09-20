@@ -830,7 +830,7 @@ function App() {
         <Shop products={products} Link={Link} onAdd={addToCart} />
       ) : path === "/checkout/success" ? (
         <ShopSuccess Link={Link} onClear={() => setCart([])} />
-      ) : path === "/admin/flash" ? (
+      ) : ["/admin", "/admin/", "/admin/flash", "/admin/flash/"].includes(path) ? (
         <Admin
           remote={remote}
           gallery={gallery}
