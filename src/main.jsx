@@ -118,9 +118,9 @@ function Header({ cartCount = 0, onCartOpen }) {
           <Link to="/#about">About</Link>
           <Link to="/shop" className="shop-entry">Lucid Entom <ArrowUpRight /></Link>
         </>}
-        <button type="button" className="shop-cart-trigger" onClick={onCartOpen}>
+        {onShop && <button type="button" className="shop-cart-trigger" onClick={onCartOpen}>
           <ShoppingBag /> Cart <span>{cartCount}</span>
-        </button>
+        </button>}
         {onShop ? (
           <Link to="/" className="shop-entry active">Lucid Blvck <ArrowUpRight /></Link>
         ) : <a
