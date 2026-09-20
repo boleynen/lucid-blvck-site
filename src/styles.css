@@ -497,6 +497,23 @@ footer a {
   color: var(--ink);
   font: inherit;
 }
+.admin-shortcuts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 24px 0 36px;
+}
+.admin-shortcuts a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border: 1px solid var(--ink);
+}
+.admin-shortcuts a:first-child { background: var(--accent); }
+.admin-shortcuts a:hover,
+.admin-shortcuts a:focus-visible { background: var(--ink); color: var(--paper); }
+#admin-shop, #admin-flash, #admin-gallery { scroll-margin-top: 90px; }
 .admin-heading {
   display: flex;
   justify-content: space-between;

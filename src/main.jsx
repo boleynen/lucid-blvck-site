@@ -623,11 +623,20 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
         <div className="admin-heading">
           <div>
             <p className="eyebrow">Secure studio access</p>
-            <h1>Upload flash</h1>
+            <h1>Studio admin</h1>
           </div>
           <button onClick={logout}>
             <LogOut /> Sign out
           </button>
+        </div>
+        <div className="admin-shortcuts" role="navigation" aria-label="Admin sections">
+          <a href="#admin-shop">Shop objects</a>
+          <a href="#admin-flash">Flash</a>
+          <a href="#admin-gallery">Tattoo gallery</a>
+          <Link to="/shop">View shop <ArrowUpRight /></Link>
+        </div>
+        <div className="admin-section-title" id="admin-flash">
+          <h2>Upload flash.</h2>
         </div>
         <form onSubmit={add} className="flash-form">
           <label>
@@ -695,7 +704,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           <p className="eyebrow">Tattoo gallery</p>
           <h2>Upload finished work.</h2>
         </div>
-        <form onSubmit={addGallery} className="gallery-form">
+        <form onSubmit={addGallery} className="gallery-form" id="admin-gallery">
           <label>
             Title
             <input
@@ -743,9 +752,10 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
         </div>
         <div className="admin-divider" />
         <div className="admin-section-title">
-          <p className="eyebrow">Lucid Entom shop</p>
+          <p className="eyebrow" id="admin-shop">Lucid Entom shop</p>
           <h2>Publish an insect work.</h2>
         </div>
+        <p>Add a photo, price and stock to publish an object directly in the shop. Set stock to 1 for a unique piece.</p>
         <form onSubmit={addShopProduct} className="flash-form shop-admin-form">
           <label>Title<input required value={shopForm.title} onChange={(e) => setShopForm({ ...shopForm, title: e.target.value })} placeholder="Object title" /></label>
           <label>Price (€)<input required inputMode="decimal" value={shopForm.price} onChange={(e) => setShopForm({ ...shopForm, price: e.target.value })} placeholder="125,00" /></label>
