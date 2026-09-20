@@ -72,3 +72,9 @@ Subscribe it to `checkout.session.completed` and `checkout.session.async_payment
 4. Redeploy the site. Add products at `/admin/flash`; customers can then buy them at `/shop`.
 
 Prices and stock are always read again on the server before Stripe Checkout is created. Stripe and Supabase secret keys are used only by the Netlify functions and must never be added to frontend code or committed to Git.
+
+## Multiple photos and cover selection
+
+Before deploying the multi-photo admin, run `supabase/multi-photo-setup.sql` in the Supabase SQL Editor (after `setup.sql` and `shop-setup.sql`). It adds photo albums to tattoo projects and shop products, retaining existing cover images. It can be rerun safely.
+
+In `/admin`, use **Add photos** to select or append up to 12 JPG, PNG or WebP files (10 MB each). Choose **Cover photo** below a preview; you can remove photos before publishing. The selected cover appears in listings, the cart and checkout. Visitors can browse all photos in the tattoo lightbox and shop product detail. Existing single-photo records remain supported.

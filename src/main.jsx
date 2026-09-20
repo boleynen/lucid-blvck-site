@@ -12,6 +12,8 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import "./styles.css";
+import { PhotoPicker, PhotoGallery } from "./photos.jsx";
+import { publishPhotos, removeRecordPhotos } from "./photos.js";
 import { CartDrawer, Shop, ShopProduct, ShopSuccess } from "./shop";
 import {
   databaseConfigured,
@@ -334,7 +336,7 @@ function TattooGallery({ items }) {
       <section className="section gallery-section">
         <div className="section-head">
           <p className="eyebrow">Selected tattoos</p>
-          <span>{items.length} photos</span>
+          <span>{items.length} projects</span>
         </div>
         {items.length ? (
           <div className="tattoo-grid">
@@ -372,7 +374,7 @@ function TattooGallery({ items }) {
           <button type="button" onClick={() => setSelected(null)} aria-label="Close photograph">
             <X />
           </button>
-          <img src={selected.image_url} alt={selected.title} />
+          <PhotoGallery key={selected.id} record={selected} />
           <p>{selected.title}{selected.placement ? ` · ${selected.placement}` : ""}</p>
         </div>
       )}
@@ -476,10 +478,14 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     [file, setFile] = useState(null),
     [message, setMessage] = useState(""),
     [galleryForm, setGalleryForm] = useState({ title: "", placement: "" }),
-    [galleryFile, setGalleryFile] = useState(null),
+    [galleryPhotos, setGalleryPhotos] = useState([]),
+    [galleryCover, setGalleryCover] = useState(""),
+    [galleryUploading, setGalleryUploading] = useState(false),
     [galleryMessage, setGalleryMessage] = useState(""),
     [shopForm, setShopForm] = useState({ title: "", description: "", price: "", dimensions: "", shipping: "", stock: "1" }),
-    [shopFile, setShopFile] = useState(null),
+    [shopPhotos, setShopPhotos] = useState([]),
+    [shopCover, setShopCover] = useState(""),
+    [shopUploading, setShopUploading] = useState(false),
     [shopMessage, setShopMessage] = useState("");
   if (!databaseConfigured)
     return (
@@ -542,27 +548,22 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
   };
   const addGallery = async (e) => {
     e.preventDefault();
-    const formElement = e.currentTarget;
-    if (!galleryFile) return setGalleryMessage("Choose an image first.");
-    setGalleryMessage("Uploading…");
-    const ext = galleryFile.name.split(".").pop().toLowerCase();
-    const path = `${session.user.id}/${crypto.randomUUID()}.${ext}`;
+    if (galleryUploading) return;
+    if (!galleryPhotos.length) return setGalleryMessage("Choose at least one photo.");
+    setGalleryUploading(true);
     try {
-      const imageUrl = await uploadTattooImage(galleryFile, path);
-      await insertTattoo({
-        title: galleryForm.title || "Tattoo",
-        placement: galleryForm.placement,
-        image_url: imageUrl,
-        storage_path: path,
-      });
+      await publishPhotos({ photos: galleryPhotos, coverId: galleryCover, userId: session.user.id,
+        upload: uploadTattooImage, remove: removeTattooImage, insert: insertTattoo,
+        record: { title: galleryForm.title || "Tattoo", placement: galleryForm.placement }, onProgress: setGalleryMessage });
       setGalleryForm({ title: "", placement: "" });
-      setGalleryFile(null);
-      formElement.reset();
-      setGalleryMessage("Tattoo photograph published.");
+      setGalleryPhotos([]);
+      setGalleryCover("");
+      setGalleryMessage("Tattoo project published.");
       await onGalleryChanged();
     } catch (error) {
-      await removeTattooImage(path).catch(() => {});
       setGalleryMessage(error.message);
+    } finally {
+      setGalleryUploading(false);
     }
   };
   const removeGallery = async (item) => {
@@ -570,7 +571,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     setGalleryMessage("Deleting…");
     try {
       await deleteTattoo(item.id);
-      await removeTattooImage(item.storage_path);
+      await removeRecordPhotos(item, removeTattooImage);
       setGalleryMessage("Tattoo photograph deleted.");
       await onGalleryChanged();
     } catch (error) {
@@ -579,26 +580,27 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
   };
   const addShopProduct = async (e) => {
     e.preventDefault();
-    const formElement = e.currentTarget;
-    if (!shopFile) return setShopMessage("Choose an image first.");
+    if (shopUploading) return;
+    if (!shopPhotos.length) return setShopMessage("Choose at least one photo.");
     const priceCents = Math.round(Number(shopForm.price.replace(",", ".")) * 100);
     const shippingCents = Math.round(Number(shopForm.shipping.replace(",", ".")) * 100);
     if (!Number.isInteger(priceCents) || priceCents < 50) return setShopMessage("Enter a valid price.");
     if (!Number.isInteger(shippingCents) || shippingCents < 0) return setShopMessage("Enter valid shipping costs.");
-    setShopMessage("Uploading…");
-    const ext = shopFile.name.split(".").pop().toLowerCase();
-    const storagePath = `${session.user.id}/${crypto.randomUUID()}.${ext}`;
+    setShopUploading(true);
     try {
-      const imageUrl = await uploadShopImage(shopFile, storagePath);
-      await insertShopProduct({ title: shopForm.title, description: shopForm.description, price_cents: priceCents, dimensions: shopForm.dimensions, shipping_cents: shippingCents, stock_quantity: Math.max(0, Number(shopForm.stock) || 0), image_url: imageUrl, storage_path: storagePath, active: true });
+      await publishPhotos({ photos: shopPhotos, coverId: shopCover, userId: session.user.id,
+        upload: uploadShopImage, remove: removeShopImage, insert: insertShopProduct,
+        record: { title: shopForm.title, description: shopForm.description, price_cents: priceCents, dimensions: shopForm.dimensions, shipping_cents: shippingCents, stock_quantity: Math.max(0, Number(shopForm.stock) || 0), active: true },
+        onProgress: setShopMessage });
       setShopForm({ title: "", description: "", price: "", dimensions: "", shipping: "", stock: "1" });
-      setShopFile(null);
-      formElement.reset();
+      setShopPhotos([]);
+      setShopCover("");
       setShopMessage("Object published.");
       await onProductsChanged();
     } catch (error) {
-      await removeShopImage(storagePath).catch(() => {});
       setShopMessage(error.message);
+    } finally {
+      setShopUploading(false);
     }
   };
   const removeShopProduct = async (item) => {
@@ -606,7 +608,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     setShopMessage("Deleting…");
     try {
       await deleteShopProduct(item.id);
-      await removeShopImage(item.storage_path);
+      await removeRecordPhotos(item, removeShopImage);
       setShopMessage("Object deleted.");
       await onProductsChanged();
     } catch (error) {
@@ -724,17 +726,10 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
               placeholder="For example: upper arm"
             />
           </label>
-          <label className="file-field">
-            Photograph
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              required
-              onChange={(e) => setGalleryFile(e.target.files[0])}
-            />
-          </label>
-          <button type="submit">
-            <Upload /> Upload tattoo
+          <PhotoPicker label="Project photos" photos={galleryPhotos} coverId={galleryCover} disabled={galleryUploading}
+            onChange={(photos, cover) => { setGalleryPhotos(photos); setGalleryCover(cover); }} />
+          <button type="submit" disabled={galleryUploading}>
+            <Upload /> {galleryUploading ? "Publishing..." : "Publish tattoo project"}
           </button>
           {galleryMessage && <p className="form-message">{galleryMessage}</p>}
         </form>
@@ -755,7 +750,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           <p className="eyebrow" id="admin-shop">Lucid Entom shop</p>
           <h2>Publish an insect work.</h2>
         </div>
-        <p>Add a photo, price and stock to publish an object directly in the shop. Set stock to 1 for a unique piece.</p>
+        <p>Add photos, choose a cover, and set price and stock to publish an object directly in the shop. Set stock to 1 for a unique piece.</p>
         <form onSubmit={addShopProduct} className="flash-form shop-admin-form">
           <label>Title<input required value={shopForm.title} onChange={(e) => setShopForm({ ...shopForm, title: e.target.value })} placeholder="Object title" /></label>
           <label>Price (€)<input required inputMode="decimal" value={shopForm.price} onChange={(e) => setShopForm({ ...shopForm, price: e.target.value })} placeholder="125,00" /></label>
@@ -763,8 +758,9 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           <label>Dimensions<input required value={shopForm.dimensions} onChange={(e) => setShopForm({ ...shopForm, dimensions: e.target.value })} placeholder="30 × 40 cm" /></label>
           <label>Shipping (€)<input required inputMode="decimal" value={shopForm.shipping} onChange={(e) => setShopForm({ ...shopForm, shipping: e.target.value })} placeholder="9,50" /></label>
           <label className="wide">Description<textarea required rows="4" value={shopForm.description} onChange={(e) => setShopForm({ ...shopForm, description: e.target.value })} placeholder="Materials, process and story…" /></label>
-          <label className="file-field">Product image<input type="file" accept="image/jpeg,image/png,image/webp" required onChange={(e) => setShopFile(e.target.files[0])} /></label>
-          <button type="submit"><Upload /> Publish object</button>
+          <PhotoPicker label="Product photos" photos={shopPhotos} coverId={shopCover} disabled={shopUploading}
+            onChange={(photos, cover) => { setShopPhotos(photos); setShopCover(cover); }} />
+          <button type="submit" disabled={shopUploading}><Upload /> {shopUploading ? "Publishing..." : "Publish object"}</button>
           {shopMessage && <p className="form-message">{shopMessage}</p>}
         </form>
         <div className="admin-list">

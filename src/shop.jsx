@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { PhotoGallery } from "./photos.jsx";
 import { ArrowUpRight, ChevronLeft, Minus, Plus, ShoppingBag, X } from "lucide-react";
 
 export const euro = (cents = 0) => new Intl.NumberFormat("en-BE", {
@@ -66,7 +67,7 @@ export function ShopProduct({ product, Link, onAdd }) {
   if (!product) return <main className="shop-missing"><p>Specimen unavailable.</p><Link to="/shop">Return to the collection</Link></main>;
   return (
     <main className="objects-shop shop-product-page">
-      <div className="shop-product-image"><img src={product.image_url} alt={product.title} /></div>
+      <div className="shop-product-image"><PhotoGallery key={product.id} record={product} /></div>
       <article className="shop-product-copy">
         <Link to="/shop" className="shop-back"><ChevronLeft /> All specimens</Link>
         <p className="shop-edition">Unique work · 1 of 1</p>
