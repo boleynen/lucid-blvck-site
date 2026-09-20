@@ -467,6 +467,18 @@ function Login({ onLogin }) {
     </main>
   );
 }
+function PublishedWorks({ count, children }) {
+  return (
+    <details className="admin-published">
+      <summary>
+        <span className="published-show">Laat gepubliceerde werken zien</span>
+        <span className="published-hide">Verberg gepubliceerde werken</span>
+        {" "}({count})
+      </summary>
+      <div className="admin-list">{children}</div>
+    </details>
+  );
+}
 function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProductsChanged }) {
   const [session, setSession] = useState(getSession()),
     [form, setForm] = useState({
@@ -681,7 +693,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           </button>
           {message && <p className="form-message">{message}</p>}
         </form>
-        <div className="admin-list">
+        <PublishedWorks count={remote.length}>
           {remote.map((x) => (
             <div key={x.id}>
               <img src={x.image} alt="" />
@@ -700,7 +712,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
               static website content.
             </p>
           )}
-        </div>
+        </PublishedWorks>
         <div className="admin-divider" />
         <div className="admin-section-title">
           <p className="eyebrow">Tattoo gallery</p>
@@ -733,7 +745,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           </button>
           {galleryMessage && <p className="form-message">{galleryMessage}</p>}
         </form>
-        <div className="admin-list">
+        <PublishedWorks count={gallery.length}>
           {gallery.map((item) => (
             <div key={item.id}>
               <img src={item.image_url} alt="" />
@@ -744,7 +756,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
             </div>
           ))}
           {!gallery.length && <p className="empty">No tattoo photographs uploaded yet.</p>}
-        </div>
+        </PublishedWorks>
         <div className="admin-divider" />
         <div className="admin-section-title">
           <p className="eyebrow" id="admin-shop">Lucid Entom shop</p>
@@ -763,10 +775,10 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           <button type="submit" disabled={shopUploading}><Upload /> {shopUploading ? "Publishing..." : "Publish object"}</button>
           {shopMessage && <p className="form-message">{shopMessage}</p>}
         </form>
-        <div className="admin-list">
+        <PublishedWorks count={products.length}>
           {products.map((item) => <div key={item.id}><img src={item.image_url} alt="" /><span>{item.title} · €{(item.price_cents / 100).toFixed(2)} · Stock {item.stock_quantity}</span><button aria-label={`Delete ${item.title}`} onClick={() => removeShopProduct(item)}><Trash2 /></button></div>)}
           {!products.length && <p className="empty">No shop objects published yet.</p>}
-        </div>
+        </PublishedWorks>
       </section>
     </main>
   );
