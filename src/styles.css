@@ -1200,8 +1200,8 @@ footer img {
   content: "";
   position: absolute;
   z-index: 2;
-  inset: 7px -7px -7px 7px;
-  border: 1px solid #6f7344;
+  inset: 18px -26px -26px 18px;
+  border: 2px solid #6f7344;
   pointer-events: none;
 }
 .insta-grid {
@@ -1295,6 +1295,9 @@ footer img {
   }
   .about figure {
     width: 88%;
+  }
+  .about figure::after {
+    inset: 12px -16px -16px 12px;
   }
   .about h2 {
     font-size: 34px;
