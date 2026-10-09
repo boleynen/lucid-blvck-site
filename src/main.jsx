@@ -328,7 +328,7 @@ function Flash({ items }) {
   );
 }
 function TattooGallery({ items }) {
-  const [selected, setSelected] = useState(null);
+  const [selected, setSelected] = useState(() => items.find((item) => item.id === location.hash.slice(1)) || null);
   return (
     <main id="top">
       <section className="page-hero gallery-hero">
@@ -788,7 +788,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           {remote.map((x) => (
             <div key={x.id}>
               <img src={x.image} alt="" />
-              <span>{x.title}</span>
+              <Link className="admin-item-link" to={`/flash/${x.id}`}>{x.title}</Link>
               <button
                 aria-label={`Delete ${x.title}`}
                 onClick={() => remove(x)}
@@ -841,7 +841,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           {gallery.map((item) => (
             <div key={item.id}>
               <img src={item.image_url} alt="" />
-              <span>{item.title}{item.placement ? ` · ${item.placement}` : ""}</span>
+              <Link className="admin-item-link" to={`/tattoo-gallery#${item.id}`}>{item.title}{item.placement ? ` · ${item.placement}` : ""}</Link>
               <button aria-label={`Delete ${item.title}`} onClick={() => removeGallery(item)}>
                 <Trash2 />
               </button>
@@ -869,7 +869,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           {shopMessage && <p className="form-message">{shopMessage}</p>}
         </form>
         <PublishedWorks count={products.length}>
-          {products.map((item) => <div key={item.id}><img src={item.image_url} alt="" /><span>{item.title} · €{(item.price_cents / 100).toFixed(2)} · Stock {item.stock_quantity}</span><div className="admin-list-actions"><button aria-label={`Edit ${item.title}`} onClick={() => openShopEditor(item)}><Pencil /></button><button aria-label={`Delete ${item.title}`} onClick={() => removeShopProduct(item)}><Trash2 /></button></div></div>)}
+          {products.map((item) => <div key={item.id}><img src={item.image_url} alt="" /><Link className="admin-item-link" to={`/shop/${item.id}`}>{item.title} · €{(item.price_cents / 100).toFixed(2)} · Stock {item.stock_quantity}</Link><div className="admin-list-actions"><button aria-label={`Edit ${item.title}`} onClick={() => openShopEditor(item)}><Pencil /></button><button aria-label={`Delete ${item.title}`} onClick={() => removeShopProduct(item)}><Trash2 /></button></div></div>)}
           {!products.length && <p className="empty">No shop objects published yet.</p>}
         </PublishedWorks>
         </div>}

@@ -415,6 +415,9 @@ footer a {
   height: 60px;
   object-fit: cover;
 }
+.admin-item-link { width: fit-content; max-width: 100%; border-bottom: 1px solid transparent; overflow-wrap: anywhere; }
+.admin-item-link:hover,
+.admin-item-link:focus-visible { border-bottom-color: currentColor; }
 .admin-list-actions { display: flex; gap: 8px; }
 .admin-list-actions button { padding: 11px; cursor: pointer; }
 .admin-list-actions svg { width: 16px; height: 16px; }
