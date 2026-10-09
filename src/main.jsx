@@ -516,6 +516,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     [editShopCover, setEditShopCover] = useState(""),
     [editShopMessage, setEditShopMessage] = useState(""),
     [editShopSaving, setEditShopSaving] = useState(false),
+    [adminSection, setAdminSection] = useState("shop"),
     [sessionExpired, setSessionExpired] = useState(false);
   useEffect(() => {
     const expired = () => { setSession(null); setSessionExpired(true); };
@@ -724,7 +725,15 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
   };
   return (
     <main className="admin">
-      <section>
+      <div className="admin-shell">
+        <aside className="admin-sidebar" aria-label="Admin sections">
+          <p className="eyebrow">Manage</p>
+          <button className={adminSection === "shop" ? "active" : ""} onClick={() => setAdminSection("shop")}><span>01</span> Shop objects <small>{products.length}</small></button>
+          <button className={adminSection === "flash" ? "active" : ""} onClick={() => setAdminSection("flash")}><span>02</span> Flash <small>{remote.length}</small></button>
+          <button className={adminSection === "gallery" ? "active" : ""} onClick={() => setAdminSection("gallery")}><span>03</span> Tattoo gallery <small>{gallery.length}</small></button>
+          <Link to="/shop">View shop <ArrowUpRight /></Link>
+        </aside>
+        <section className="admin-workspace">
         <div className="admin-heading">
           <div>
             <p className="eyebrow">Secure studio access</p>
@@ -734,13 +743,8 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
             <LogOut /> Sign out
           </button>
         </div>
-        <div className="admin-shortcuts" role="navigation" aria-label="Admin sections">
-          <a href="#admin-shop">Shop objects</a>
-          <a href="#admin-flash">Flash</a>
-          <a href="#admin-gallery">Tattoo gallery</a>
-          <Link to="/shop">View shop <ArrowUpRight /></Link>
-        </div>
-        <div className="admin-section-title" id="admin-flash">
+        {adminSection === "flash" && <div className="admin-panel" id="admin-flash">
+        <div className="admin-section-title">
           <h2>Upload flash.</h2>
         </div>
         <form onSubmit={add} className="flash-form">
@@ -804,12 +808,13 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
             </p>
           )}
         </PublishedWorks>
-        <div className="admin-divider" />
+        </div>}
+        {adminSection === "gallery" && <div className="admin-panel" id="admin-gallery">
         <div className="admin-section-title">
           <p className="eyebrow">Tattoo gallery</p>
           <h2>Upload finished work.</h2>
         </div>
-        <form onSubmit={addGallery} className="gallery-form" id="admin-gallery">
+        <form onSubmit={addGallery} className="gallery-form">
           <label>
             Title
             <input
@@ -848,9 +853,10 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           ))}
           {!gallery.length && <p className="empty">No tattoo photographs uploaded yet.</p>}
         </PublishedWorks>
-        <div className="admin-divider" />
+        </div>}
+        {adminSection === "shop" && <div className="admin-panel" id="admin-shop">
         <div className="admin-section-title">
-          <p className="eyebrow" id="admin-shop">Lucid Entom shop</p>
+          <p className="eyebrow">Lucid Entom shop</p>
           <h2>Publish an insect work.</h2>
         </div>
         <p>Add photos, choose a cover, and set price and stock to publish an object directly in the shop. Set stock to 1 for a unique piece.</p>
@@ -870,6 +876,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           {products.map((item) => <div key={item.id}><img src={item.image_url} alt="" /><span>{item.title} · €{(item.price_cents / 100).toFixed(2)} · Stock {item.stock_quantity}</span><div className="admin-list-actions"><button aria-label={`Edit ${item.title}`} onClick={() => openShopEditor(item)}><Pencil /></button><button aria-label={`Delete ${item.title}`} onClick={() => removeShopProduct(item)}><Trash2 /></button></div></div>)}
           {!products.length && <p className="empty">No shop objects published yet.</p>}
         </PublishedWorks>
+        </div>}
         {editingShopItem && <div className="admin-edit-backdrop" role="presentation" onMouseDown={closeShopEditor}>
           <section className="admin-edit-modal" role="dialog" aria-modal="true" aria-labelledby="shop-edit-title" onMouseDown={(e) => e.stopPropagation()}>
             <div className="admin-edit-modal-head"><div><p className="eyebrow">Edit shop item</p><h2 id="shop-edit-title">{editingShopItem.title}</h2></div><button type="button" className="admin-edit-close" aria-label="Close editor" onClick={closeShopEditor}><X /></button></div>
@@ -888,7 +895,8 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
             </form>
           </section>
         </div>}
-      </section>
+        </section>
+      </div>
     </main>
   );
 }

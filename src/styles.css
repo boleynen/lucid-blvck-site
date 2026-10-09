@@ -341,10 +341,20 @@ footer a {
   padding: 145px var(--pad);
   min-height: 100vh;
 }
-.admin section {
-  max-width: 900px;
-  margin: auto;
-}
+.admin { padding-top: 115px; }
+.admin-shell { width: min(1280px, 100%); margin: auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: clamp(42px, 6vw, 90px); align-items: start; }
+.admin-workspace { min-width: 0; }
+.admin-sidebar { position: sticky; top: 96px; display: grid; align-content: start; border-top: 1px solid var(--ink); }
+.admin-sidebar > .eyebrow { margin: 20px 0 26px; }
+.admin .admin-sidebar button { width: 100%; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 10px; justify-content: initial; padding: 17px 10px; border: 0; border-bottom: 1px solid var(--line); text-align: left; cursor: pointer; }
+.admin-sidebar button span { color: #777; font-size: 9px; }
+.admin-sidebar button small { min-width: 25px; padding: 3px 6px; border: 1px solid var(--line); text-align: center; }
+.admin-sidebar button.active { background: var(--accent); }
+.admin-sidebar button.active span { color: var(--ink); }
+.admin-sidebar > a { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; padding: 14px 10px; border: 1px solid var(--ink); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+.admin-sidebar > a svg { width: 14px; height: 14px; }
+.admin-panel { animation: admin-panel-in .22s ease-out; }
+@keyframes admin-panel-in { from { opacity: 0; transform: translateY(6px); } }
 .admin h1 {
   font:
     400 70px Georgia,
@@ -548,6 +558,15 @@ footer a {
   .admin button {
     justify-content: center;
   }
+  .admin { padding: 92px 18px 70px; }
+  .admin-shell { display: block; }
+  .admin-sidebar { position: sticky; z-index: 20; top: 68px; grid-template-columns: repeat(3, 1fr); margin: 0 -18px 30px; padding: 0 18px; background: var(--paper); border-bottom: 1px solid var(--ink); }
+  .admin-sidebar > .eyebrow,
+  .admin-sidebar > a { display: none; }
+  .admin .admin-sidebar button { display: block; padding: 14px 7px; border-bottom: 0; font-size: 10px; text-align: center; }
+  .admin-sidebar button span,
+  .admin-sidebar button small { display: none; }
+  .admin-heading h1 { font-size: 34px; }
 }
 .admin input,
 .admin select {
