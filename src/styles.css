@@ -344,8 +344,11 @@ footer a {
 .admin { padding-top: 115px; }
 .admin-shell { width: min(1280px, 100%); margin: auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: clamp(42px, 6vw, 90px); align-items: start; }
 .admin-workspace { min-width: 0; }
-.admin-sidebar { position: sticky; top: 96px; display: grid; align-content: start; border-top: 1px solid var(--ink); }
-.admin-sidebar > .eyebrow { margin: 20px 0 26px; }
+.admin-sidebar { position: sticky; top: 92px; display: grid; align-content: start; }
+.admin-side-heading { padding-bottom: 22px; border-bottom: 1px solid var(--ink); }
+.admin-side-heading .eyebrow { margin: 0 0 8px; font-size: 7px; }
+.admin .admin-side-heading h1 { margin: 0; font: 400 22px/1.05 Georgia, serif; letter-spacing: -.035em; }
+.admin-sidebar > .eyebrow { margin: 20px 10px 12px; font-size: 7px; }
 .admin .admin-sidebar button { width: 100%; display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 10px; justify-content: initial; padding: 17px 10px; border: 0; border-bottom: 1px solid var(--line); text-align: left; cursor: pointer; }
 .admin-sidebar button span { color: #777; font-size: 9px; }
 .admin-sidebar button small { min-width: 25px; padding: 3px 6px; border: 1px solid var(--line); text-align: center; }
@@ -353,6 +356,8 @@ footer a {
 .admin-sidebar button.active span { color: var(--ink); }
 .admin-sidebar > a { display: flex; justify-content: space-between; align-items: center; margin-top: 22px; padding: 14px 10px; border: 1px solid var(--ink); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
 .admin-sidebar > a svg { width: 14px; height: 14px; }
+.admin .admin-sidebar .admin-signout { display: flex; grid-template-columns: none; justify-content: flex-start; margin-top: 10px; padding: 13px 10px; border: 0; font-size: 10px; cursor: pointer; }
+.admin-signout svg { width: 14px; height: 14px; }
 .admin-panel { animation: admin-panel-in .22s ease-out; }
 @keyframes admin-panel-in { from { opacity: 0; transform: translateY(6px); } }
 .admin h1 {
@@ -561,12 +566,15 @@ footer a {
   .admin { padding: 92px 18px 70px; }
   .admin-shell { display: block; }
   .admin-sidebar { position: sticky; z-index: 20; top: 68px; grid-template-columns: repeat(3, 1fr); margin: 0 -18px 30px; padding: 0 18px; background: var(--paper); border-bottom: 1px solid var(--ink); }
+  .admin-side-heading { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .admin-side-heading .eyebrow { margin: 0; }
+  .admin .admin-side-heading h1 { font-size: 17px; }
   .admin-sidebar > .eyebrow,
-  .admin-sidebar > a { display: none; }
+  .admin-sidebar > a,
+  .admin .admin-sidebar .admin-signout { display: none; }
   .admin .admin-sidebar button { display: block; padding: 14px 7px; border-bottom: 0; font-size: 10px; text-align: center; }
   .admin-sidebar button span,
   .admin-sidebar button small { display: none; }
-  .admin-heading h1 { font-size: 34px; }
 }
 .admin input,
 .admin select {

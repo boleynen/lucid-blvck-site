@@ -727,22 +727,18 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     <main className="admin">
       <div className="admin-shell">
         <aside className="admin-sidebar" aria-label="Admin sections">
+          <div className="admin-side-heading">
+            <p className="eyebrow">Secure studio access</p>
+            <h1>Studio admin</h1>
+          </div>
           <p className="eyebrow">Manage</p>
           <button className={adminSection === "shop" ? "active" : ""} onClick={() => setAdminSection("shop")}><span>01</span> Shop objects <small>{products.length}</small></button>
           <button className={adminSection === "flash" ? "active" : ""} onClick={() => setAdminSection("flash")}><span>02</span> Flash <small>{remote.length}</small></button>
           <button className={adminSection === "gallery" ? "active" : ""} onClick={() => setAdminSection("gallery")}><span>03</span> Tattoo gallery <small>{gallery.length}</small></button>
           <Link to="/shop">View shop <ArrowUpRight /></Link>
+          <button className="admin-signout" onClick={logout}><LogOut /> Sign out</button>
         </aside>
         <section className="admin-workspace">
-        <div className="admin-heading">
-          <div>
-            <p className="eyebrow">Secure studio access</p>
-            <h1>Studio admin</h1>
-          </div>
-          <button onClick={logout}>
-            <LogOut /> Sign out
-          </button>
-        </div>
         {adminSection === "flash" && <div className="admin-panel" id="admin-flash">
         <div className="admin-section-title">
           <h2>Upload flash.</h2>
