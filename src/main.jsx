@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import "./styles.css";
 import { PhotoPicker, PhotoGallery } from "./photos.jsx";
-import { publishPhotos, removeRecordPhotos } from "./photos.js";
+import { publishPhotos, recordPhotos, removeRecordPhotos } from "./photos.js";
 import { CartDrawer, Shop, ShopProduct, ShopSuccess } from "./shop";
 import {
   databaseConfigured,
@@ -512,6 +512,8 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     [shopMessage, setShopMessage] = useState(""),
     [editingShopItem, setEditingShopItem] = useState(null),
     [editShopForm, setEditShopForm] = useState({ title: "", description: "", price: "", dimensions: "", shipping: "", stock: "1" }),
+    [editShopPhotos, setEditShopPhotos] = useState([]),
+    [editShopCover, setEditShopCover] = useState(""),
     [editShopMessage, setEditShopMessage] = useState(""),
     [editShopSaving, setEditShopSaving] = useState(false),
     [sessionExpired, setSessionExpired] = useState(false);
@@ -658,11 +660,15 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
       shipping: (item.shipping_cents / 100).toFixed(2).replace(".", ","),
       stock: String(item.stock_quantity ?? 0),
     });
+    setEditShopPhotos([]);
+    setEditShopCover("");
     setEditShopMessage("");
   };
   const closeShopEditor = () => {
     if (editShopSaving) return;
     setEditingShopItem(null);
+    setEditShopPhotos([]);
+    setEditShopCover("");
     setEditShopMessage("");
   };
   const saveShopProduct = async (e) => {
@@ -675,16 +681,36 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     setEditShopSaving(true);
     setEditShopMessage("Saving changes…");
     try {
-      await updateShopProduct(editingShopItem.id, {
+      let cleanupWarning = false;
+      const record = {
         title: editShopForm.title,
         description: editShopForm.description,
         price_cents: priceCents,
         dimensions: editShopForm.dimensions,
         shipping_cents: shippingCents,
         stock_quantity: Math.max(0, Number(editShopForm.stock) || 0),
-      });
+      };
+      if (editShopPhotos.length) {
+        await publishPhotos({
+          photos: editShopPhotos,
+          coverId: editShopCover,
+          userId: session.user.id,
+          upload: uploadShopImage,
+          remove: removeShopImage,
+          insert: (updatedRecord) => updateShopProduct(editingShopItem.id, updatedRecord),
+          record,
+          onProgress: setEditShopMessage,
+        });
+        try {
+          await removeRecordPhotos(editingShopItem, removeShopImage);
+        } catch {
+          cleanupWarning = true;
+        }
+      } else {
+        await updateShopProduct(editingShopItem.id, record);
+      }
       await onProductsChanged();
-      setShopMessage(`${editShopForm.title} updated.`);
+      setShopMessage(cleanupWarning ? `${editShopForm.title} updated. Some old image files could not be cleaned up.` : `${editShopForm.title} updated.`);
       setEditingShopItem(null);
     } catch (error) {
       setEditShopMessage(error.message);
@@ -848,13 +874,15 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           <section className="admin-edit-modal" role="dialog" aria-modal="true" aria-labelledby="shop-edit-title" onMouseDown={(e) => e.stopPropagation()}>
             <div className="admin-edit-modal-head"><div><p className="eyebrow">Edit shop item</p><h2 id="shop-edit-title">{editingShopItem.title}</h2></div><button type="button" className="admin-edit-close" aria-label="Close editor" onClick={closeShopEditor}><X /></button></div>
             <form onSubmit={saveShopProduct} className="admin-edit-form">
-              <label>Title<input required value={editShopForm.title} onChange={(e) => setEditShopForm({ ...editShopForm, title: e.target.value })} /></label>
+              <label className="wide">Title<input required value={editShopForm.title} onChange={(e) => setEditShopForm({ ...editShopForm, title: e.target.value })} /></label>
               <label>Price (€)<input required inputMode="decimal" value={editShopForm.price} onChange={(e) => setEditShopForm({ ...editShopForm, price: e.target.value })} /></label>
               <label>Stock<input required type="number" min="0" max="20" value={editShopForm.stock} onChange={(e) => setEditShopForm({ ...editShopForm, stock: e.target.value })} /></label>
               <label>Dimensions<input required value={editShopForm.dimensions} onChange={(e) => setEditShopForm({ ...editShopForm, dimensions: e.target.value })} /></label>
               <label>Shipping (€)<input required inputMode="decimal" value={editShopForm.shipping} onChange={(e) => setEditShopForm({ ...editShopForm, shipping: e.target.value })} /></label>
               <label className="wide">Description<textarea required rows="5" value={editShopForm.description} onChange={(e) => setEditShopForm({ ...editShopForm, description: e.target.value })} /></label>
-              <p className="admin-edit-note">The existing product photos are preserved.</p>
+              <div className="admin-current-photos"><p>Current photos</p><div>{recordPhotos(editingShopItem).map((photo, index) => <img key={photo.image_url} src={photo.image_url} alt={`${editingShopItem.title} — current photo ${index + 1}`} />)}</div></div>
+              <PhotoPicker label="Replace product photos (optional)" photos={editShopPhotos} coverId={editShopCover} disabled={editShopSaving} onChange={(photos, cover) => { setEditShopPhotos(photos); setEditShopCover(cover); }} />
+              <p className="admin-edit-note">Leave this empty to keep the current photos. Adding photos replaces the complete current set after saving.</p>
               {editShopMessage && <p className="form-message">{editShopMessage}</p>}
               <div className="admin-edit-actions"><button type="button" onClick={closeShopEditor} disabled={editShopSaving}>Cancel</button><button type="submit" className="admin-edit-save" disabled={editShopSaving}><Pencil /> {editShopSaving ? "Saving…" : "Save changes"}</button></div>
             </form>

@@ -414,7 +414,7 @@ footer a {
   backdrop-filter: blur(5px);
 }
 .admin-edit-modal {
-  width: min(760px, 100%);
+  width: min(720px, 100%);
   max-height: calc(100vh - 48px);
   overflow-y: auto;
   padding: clamp(28px, 4vw, 48px);
@@ -423,19 +423,26 @@ footer a {
   box-shadow: 14px 14px 0 var(--accent);
 }
 .admin-edit-modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
-.admin-edit-modal-head h2 { margin: 8px 0 28px; font: 700 clamp(24px, 4vw, 42px)/1 "Cinzel Decorative", Georgia, serif; }
+.admin-edit-modal-head h2 { margin: 8px 0 32px; font: 700 clamp(22px, 3vw, 34px)/1.05 "Cinzel Decorative", Georgia, serif; }
 .admin-edit-close { padding: 10px !important; cursor: pointer; }
 .admin-edit-close svg { width: 18px; height: 18px; }
-.admin-edit-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-.admin-edit-form label { display: grid; gap: 8px; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.admin .admin-edit-form { display: grid !important; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; gap: 18px; margin: 0; }
+.admin .admin-edit-form label { display: grid; flex: none; gap: 8px; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
 .admin-edit-form input,
 .admin-edit-form textarea { width: 100%; padding: 14px; border: 1px solid var(--line); background: transparent; font: inherit; text-transform: none; letter-spacing: normal; resize: vertical; }
 .admin-edit-form .wide,
+.admin-current-photos,
+.admin-edit-form .photo-picker,
 .admin-edit-note,
 .admin-edit-form .form-message,
 .admin-edit-actions { grid-column: 1 / -1; }
-.admin-edit-note { margin: 0; color: #666; font-size: 12px; }
-.admin-edit-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.admin-edit-note { margin: 2px 0 0; padding: 12px 14px; background: #dedad0; color: #555; font-size: 12px; }
+.admin-current-photos > p { margin: 0 0 10px; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.admin-current-photos > div { display: flex; flex-wrap: wrap; gap: 10px; }
+.admin-current-photos img { width: 76px; height: 76px; object-fit: cover; border: 1px solid var(--line); }
+.admin .admin-edit-form .photo-picker { margin: 0; }
+.admin .admin-edit-form .photo-picker legend { font-size: 11px; text-transform: none; letter-spacing: normal; }
+.admin-edit-actions { display: flex; justify-content: flex-end; gap: 10px; padding-top: 6px; }
 .admin-edit-actions button { cursor: pointer; }
 .admin-edit-save { background: var(--accent) !important; }
 .missing {
@@ -447,8 +454,10 @@ footer a {
 @media (max-width: 760px) {
   .admin-edit-backdrop { padding: 12px; }
   .admin-edit-modal { max-height: calc(100vh - 24px); padding: 24px; box-shadow: 7px 7px 0 var(--accent); }
-  .admin-edit-form { grid-template-columns: 1fr; }
+  .admin .admin-edit-form { grid-template-columns: 1fr; }
   .admin-edit-form .wide,
+  .admin-current-photos,
+  .admin-edit-form .photo-picker,
   .admin-edit-note,
   .admin-edit-form .form-message,
   .admin-edit-actions { grid-column: auto; }
