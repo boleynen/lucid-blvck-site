@@ -36,7 +36,9 @@ import {
   uploadImage,
   uploadShopImage,
   uploadTattooImage,
+  updateFlash,
   updateShopProduct,
+  updateTattoo,
 } from "./supabase";
 const BOOK = "https://tally.so/r/686Gdk",
   IG = "https://www.instagram.com/lucidblvck.ttt/";
@@ -505,6 +507,17 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     [galleryCover, setGalleryCover] = useState(""),
     [galleryUploading, setGalleryUploading] = useState(false),
     [galleryMessage, setGalleryMessage] = useState(""),
+    [editingFlashItem, setEditingFlashItem] = useState(null),
+    [editFlashForm, setEditFlashForm] = useState({ title: "", price: "", size: "", status: "Available" }),
+    [editFlashFile, setEditFlashFile] = useState(null),
+    [editFlashMessage, setEditFlashMessage] = useState(""),
+    [editFlashSaving, setEditFlashSaving] = useState(false),
+    [editingGalleryItem, setEditingGalleryItem] = useState(null),
+    [editGalleryForm, setEditGalleryForm] = useState({ title: "", placement: "" }),
+    [editGalleryPhotos, setEditGalleryPhotos] = useState([]),
+    [editGalleryCover, setEditGalleryCover] = useState(""),
+    [editGalleryMessage, setEditGalleryMessage] = useState(""),
+    [editGallerySaving, setEditGallerySaving] = useState(false),
     [shopForm, setShopForm] = useState({ title: "", description: "", price: "", dimensions: "", shipping: "", stock: "1" }),
     [shopPhotos, setShopPhotos] = useState([]),
     [shopCover, setShopCover] = useState(""),
@@ -612,6 +625,88 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
       await onGalleryChanged();
     } catch (error) {
       setGalleryMessage(error.message);
+    }
+  };
+  const openFlashEditor = (item) => {
+    setEditingFlashItem(item);
+    setEditFlashForm({ title: item.title || "", price: item.price || "On request", size: item.size || "On request", status: item.status || "Available" });
+    setEditFlashFile(null);
+    setEditFlashMessage("");
+  };
+  const closeFlashEditor = () => {
+    if (editFlashSaving) return;
+    setEditingFlashItem(null);
+    setEditFlashFile(null);
+    setEditFlashMessage("");
+  };
+  const saveFlash = async (e) => {
+    e.preventDefault();
+    if (!editingFlashItem || editFlashSaving) return;
+    setEditFlashSaving(true);
+    setEditFlashMessage("Saving changes…");
+    let replacementPath = "";
+    try {
+      const record = { title: editFlashForm.title, estimated_price: editFlashForm.price, size: editFlashForm.size, status: editFlashForm.status };
+      let cleanupWarning = false;
+      if (editFlashFile) {
+        if (!["image/jpeg", "image/png", "image/webp"].includes(editFlashFile.type) || editFlashFile.size > 10 * 1024 * 1024) throw new Error("Use a JPG, PNG or WebP image up to 10 MB.");
+        const extension = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" }[editFlashFile.type];
+        replacementPath = `${session.user.id}/${crypto.randomUUID()}.${extension}`;
+        setEditFlashMessage("Uploading replacement image…");
+        const imageUrl = await uploadImage(editFlashFile, replacementPath);
+        await updateFlash(editingFlashItem.id, { ...record, image_url: imageUrl, storage_path: replacementPath });
+        try { await removeImage(editingFlashItem.storage_path); } catch { cleanupWarning = true; }
+      } else {
+        await updateFlash(editingFlashItem.id, record);
+      }
+      replacementPath = "";
+      await onChanged();
+      setMessage(cleanupWarning ? `${editFlashForm.title} updated. The old image could not be cleaned up.` : `${editFlashForm.title} updated.`);
+      setEditingFlashItem(null);
+    } catch (error) {
+      if (replacementPath) await removeImage(replacementPath).catch(() => {});
+      setEditFlashMessage(error.message);
+    } finally {
+      setEditFlashSaving(false);
+    }
+  };
+  const openGalleryEditor = (item) => {
+    setEditingGalleryItem(item);
+    setEditGalleryForm({ title: item.title || "", placement: item.placement || "" });
+    setEditGalleryPhotos([]);
+    setEditGalleryCover("");
+    setEditGalleryMessage("");
+  };
+  const closeGalleryEditor = () => {
+    if (editGallerySaving) return;
+    setEditingGalleryItem(null);
+    setEditGalleryPhotos([]);
+    setEditGalleryCover("");
+    setEditGalleryMessage("");
+  };
+  const saveGallery = async (e) => {
+    e.preventDefault();
+    if (!editingGalleryItem || editGallerySaving) return;
+    setEditGallerySaving(true);
+    setEditGalleryMessage("Saving changes…");
+    try {
+      let cleanupWarning = false;
+      const record = { title: editGalleryForm.title || "Tattoo", placement: editGalleryForm.placement };
+      if (editGalleryPhotos.length) {
+        await publishPhotos({ photos: editGalleryPhotos, coverId: editGalleryCover, userId: session.user.id,
+          upload: uploadTattooImage, remove: removeTattooImage,
+          insert: (updatedRecord) => updateTattoo(editingGalleryItem.id, updatedRecord), record, onProgress: setEditGalleryMessage });
+        try { await removeRecordPhotos(editingGalleryItem, removeTattooImage); } catch { cleanupWarning = true; }
+      } else {
+        await updateTattoo(editingGalleryItem.id, record);
+      }
+      await onGalleryChanged();
+      setGalleryMessage(cleanupWarning ? `${editGalleryForm.title} updated. Some old image files could not be cleaned up.` : `${editGalleryForm.title} updated.`);
+      setEditingGalleryItem(null);
+    } catch (error) {
+      setEditGalleryMessage(error.message);
+    } finally {
+      setEditGallerySaving(false);
     }
   };
   const addShopProduct = async (e) => {
@@ -789,12 +884,10 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
             <div key={x.id}>
               <img src={x.image} alt="" />
               <Link className="admin-item-link" to={`/flash/${x.id}`}>{x.title}</Link>
-              <button
-                aria-label={`Delete ${x.title}`}
-                onClick={() => remove(x)}
-              >
-                <Trash2 />
-              </button>
+              <div className="admin-list-actions">
+                <button aria-label={`Edit ${x.title}`} onClick={() => openFlashEditor(x)}><Pencil /></button>
+                <button aria-label={`Delete ${x.title}`} onClick={() => remove(x)}><Trash2 /></button>
+              </div>
             </div>
           ))}
           {!remote.length && (
@@ -842,9 +935,10 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
             <div key={item.id}>
               <img src={item.image_url} alt="" />
               <Link className="admin-item-link" to={`/tattoo-gallery#${item.id}`}>{item.title}{item.placement ? ` · ${item.placement}` : ""}</Link>
-              <button aria-label={`Delete ${item.title}`} onClick={() => removeGallery(item)}>
-                <Trash2 />
-              </button>
+              <div className="admin-list-actions">
+                <button aria-label={`Edit ${item.title}`} onClick={() => openGalleryEditor(item)}><Pencil /></button>
+                <button aria-label={`Delete ${item.title}`} onClick={() => removeGallery(item)}><Trash2 /></button>
+              </div>
             </div>
           ))}
           {!gallery.length && <p className="empty">No tattoo photographs uploaded yet.</p>}
@@ -872,6 +966,36 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           {products.map((item) => <div key={item.id}><img src={item.image_url} alt="" /><Link className="admin-item-link" to={`/shop/${item.id}`}>{item.title} · €{(item.price_cents / 100).toFixed(2)} · Stock {item.stock_quantity}</Link><div className="admin-list-actions"><button aria-label={`Edit ${item.title}`} onClick={() => openShopEditor(item)}><Pencil /></button><button aria-label={`Delete ${item.title}`} onClick={() => removeShopProduct(item)}><Trash2 /></button></div></div>)}
           {!products.length && <p className="empty">No shop objects published yet.</p>}
         </PublishedWorks>
+        </div>}
+        {editingFlashItem && <div className="admin-edit-backdrop" role="presentation" onMouseDown={closeFlashEditor}>
+          <section className="admin-edit-modal" role="dialog" aria-modal="true" aria-labelledby="flash-edit-title" onMouseDown={(e) => e.stopPropagation()}>
+            <div className="admin-edit-modal-head"><div><p className="eyebrow">Edit flash</p><h2 id="flash-edit-title">{editingFlashItem.title}</h2></div><button type="button" className="admin-edit-close" aria-label="Close editor" onClick={closeFlashEditor}><X /></button></div>
+            <form onSubmit={saveFlash} className="admin-edit-form">
+              <label className="wide">Title<input required value={editFlashForm.title} onChange={(e) => setEditFlashForm({ ...editFlashForm, title: e.target.value })} /></label>
+              <label>Estimated price<input required value={editFlashForm.price} onChange={(e) => setEditFlashForm({ ...editFlashForm, price: e.target.value })} /></label>
+              <label>Size<input required value={editFlashForm.size} onChange={(e) => setEditFlashForm({ ...editFlashForm, size: e.target.value })} /></label>
+              <label className="wide">Status<select value={editFlashForm.status} onChange={(e) => setEditFlashForm({ ...editFlashForm, status: e.target.value })}><option>Available</option><option>Reserved</option><option>Tattooed</option></select></label>
+              <div className="admin-current-photos"><p>Current image</p><div><img src={editingFlashItem.image} alt={editingFlashItem.title} /></div></div>
+              <label className="wide">Replace image (optional)<input type="file" accept="image/jpeg,image/png,image/webp" disabled={editFlashSaving} onChange={(e) => setEditFlashFile(e.target.files[0] || null)} /></label>
+              <p className="admin-edit-note">Leave this empty to keep the current image.</p>
+              {editFlashMessage && <p className="form-message">{editFlashMessage}</p>}
+              <div className="admin-edit-actions"><button type="button" onClick={closeFlashEditor} disabled={editFlashSaving}>Cancel</button><button type="submit" className="admin-edit-save" disabled={editFlashSaving}><Pencil /> {editFlashSaving ? "Saving…" : "Save changes"}</button></div>
+            </form>
+          </section>
+        </div>}
+        {editingGalleryItem && <div className="admin-edit-backdrop" role="presentation" onMouseDown={closeGalleryEditor}>
+          <section className="admin-edit-modal" role="dialog" aria-modal="true" aria-labelledby="gallery-edit-title" onMouseDown={(e) => e.stopPropagation()}>
+            <div className="admin-edit-modal-head"><div><p className="eyebrow">Edit tattoo project</p><h2 id="gallery-edit-title">{editingGalleryItem.title}</h2></div><button type="button" className="admin-edit-close" aria-label="Close editor" onClick={closeGalleryEditor}><X /></button></div>
+            <form onSubmit={saveGallery} className="admin-edit-form">
+              <label>Title<input required value={editGalleryForm.title} onChange={(e) => setEditGalleryForm({ ...editGalleryForm, title: e.target.value })} /></label>
+              <label>Placement<input value={editGalleryForm.placement} onChange={(e) => setEditGalleryForm({ ...editGalleryForm, placement: e.target.value })} /></label>
+              <div className="admin-current-photos"><p>Current photos</p><div>{recordPhotos(editingGalleryItem).map((photo, index) => <img key={photo.image_url} src={photo.image_url} alt={`${editingGalleryItem.title} — current photo ${index + 1}`} />)}</div></div>
+              <PhotoPicker label="Replace project photos (optional)" photos={editGalleryPhotos} coverId={editGalleryCover} disabled={editGallerySaving} onChange={(photos, cover) => { setEditGalleryPhotos(photos); setEditGalleryCover(cover); }} />
+              <p className="admin-edit-note">Leave this empty to keep the current photos. Adding photos replaces the complete current set after saving.</p>
+              {editGalleryMessage && <p className="form-message">{editGalleryMessage}</p>}
+              <div className="admin-edit-actions"><button type="button" onClick={closeGalleryEditor} disabled={editGallerySaving}>Cancel</button><button type="submit" className="admin-edit-save" disabled={editGallerySaving}><Pencil /> {editGallerySaving ? "Saving…" : "Save changes"}</button></div>
+            </form>
+          </section>
         </div>}
         {editingShopItem && <div className="admin-edit-backdrop" role="presentation" onMouseDown={closeShopEditor}>
           <section className="admin-edit-modal" role="dialog" aria-modal="true" aria-labelledby="shop-edit-title" onMouseDown={(e) => e.stopPropagation()}>

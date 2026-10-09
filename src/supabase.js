@@ -13,12 +13,14 @@ export async function fetchFlash(){return fetch(`${url}/rest/v1/flash?select=*&o
 export async function uploadImage(file,path){await authenticatedFetch(`${url}/storage/v1/object/flash-images/${path}`,{method:'POST',headers:headers(null,{'Content-Type':file.type,'x-upsert':'false'}),body:file}).then(json);return`${url}/storage/v1/object/public/flash-images/${path}`}
 export async function removeImage(path){return authenticatedFetch(`${url}/storage/v1/object/flash-images/${path}`,{method:'DELETE',headers:headers()}).then(json)}
 export async function insertFlash(record){return authenticatedFetch(`${url}/rest/v1/flash`,{method:'POST',headers:headers(null,{'Content-Type':'application/json',Prefer:'return=minimal'}),body:JSON.stringify(record)}).then(async r=>{if(!r.ok)await json(r)})}
+export async function updateFlash(id,record){return authenticatedFetch(`${url}/rest/v1/flash?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',headers:headers(null,{'Content-Type':'application/json',Prefer:'return=minimal'}),body:JSON.stringify(record)}).then(async r=>{if(!r.ok)await json(r)})}
 export async function deleteFlash(id){return authenticatedFetch(`${url}/rest/v1/flash?id=eq.${encodeURIComponent(id)}`,{method:'DELETE',headers:headers(null,{Prefer:'return=minimal'})}).then(async r=>{if(!r.ok)await json(r)})}
 
 export async function fetchTattoos(){return fetch(`${url}/rest/v1/tattoo_gallery?select=*&order=sort_order.desc,created_at.desc`,{headers:headers()}).then(json)}
 export async function uploadTattooImage(file,path){await authenticatedFetch(`${url}/storage/v1/object/tattoo-images/${path}`,{method:'POST',headers:headers(null,{'Content-Type':file.type,'x-upsert':'false'}),body:file}).then(json);return`${url}/storage/v1/object/public/tattoo-images/${path}`}
 export async function removeTattooImage(path){return authenticatedFetch(`${url}/storage/v1/object/tattoo-images/${path}`,{method:'DELETE',headers:headers()}).then(json)}
 export async function insertTattoo(record){return authenticatedFetch(`${url}/rest/v1/tattoo_gallery`,{method:'POST',headers:headers(null,{'Content-Type':'application/json',Prefer:'return=minimal'}),body:JSON.stringify(record)}).then(async r=>{if(!r.ok)await json(r)})}
+export async function updateTattoo(id,record){return authenticatedFetch(`${url}/rest/v1/tattoo_gallery?id=eq.${encodeURIComponent(id)}`,{method:'PATCH',headers:headers(null,{'Content-Type':'application/json',Prefer:'return=minimal'}),body:JSON.stringify(record)}).then(async r=>{if(!r.ok)await json(r)})}
 export async function deleteTattoo(id){return authenticatedFetch(`${url}/rest/v1/tattoo_gallery?id=eq.${encodeURIComponent(id)}`,{method:'DELETE',headers:headers(null,{Prefer:'return=minimal'})}).then(async r=>{if(!r.ok)await json(r)})}
 
 export async function fetchShopProducts(){return fetch(`${url}/rest/v1/shop_products?select=*&active=eq.true&order=sort_order.desc,created_at.desc`,{headers:headers()}).then(json)}
