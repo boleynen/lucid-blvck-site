@@ -110,6 +110,12 @@ function Header({ cartCount = 0, onCartOpen }) {
     onGallery = location.pathname === "/tattoo-gallery",
     onShop = location.pathname.startsWith("/shop") || location.pathname.startsWith("/checkout");
   return (
+    <>
+    <div className={`site-announcement${onShop ? " shop-announcement" : ""}`}>
+      <span>Website under construction</span>
+      <span aria-hidden="true">│</span>
+      <Link to="/shop">Artwork is available with secure online payment. <ArrowUpRight /></Link>
+    </div>
     <header className={onShop ? "shop-site-header" : ""}>
       {onShop ? (
         <div className="shop-brand">
@@ -147,6 +153,7 @@ function Header({ cartCount = 0, onCartOpen }) {
         </a>}
       </nav>
     </header>
+    </>
   );
 }
 function Footer({ flash = false }) {
