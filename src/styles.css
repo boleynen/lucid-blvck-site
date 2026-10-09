@@ -796,7 +796,7 @@ nav > a.active {
 .shop-product-image .photo-gallery-main { width: auto; height: auto; max-width: 100%; max-height: min(75vh, 800px); object-fit: contain; filter: grayscale(.55); }
 .shop-product-copy { align-self: center; padding: 80px clamp(35px, 6vw, 105px); }
 .shop-product-copy h1 { margin: 26px 0 30px; font: 700 clamp(28px, 3.2vw, 48px)/.95 "Cinzel Decorative", Georgia, serif; letter-spacing: -.045em; }
-.shop-description { max-width: 550px; color: #d8e2dcb5; font-size: 15px; line-height: 1.7; }
+.shop-description { max-width: 550px; color: #d8e2dcb5; font-size: 15px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
 .shop-product-copy dl { margin: 40px 0 28px; }
 .shop-product-copy dl > div { padding: 15px 0; border-top: 1px solid #d8e2dc2b; gap: 25px; }
 .shop-product-copy dt { color: #bc8da0; }
