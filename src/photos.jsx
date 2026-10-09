@@ -56,7 +56,7 @@ export function PhotoGallery({ record }) {
   return <div className="photo-gallery">
     <div className="photo-gallery-stage">
       <img className="photo-gallery-main" src={selected.image_url} alt={`${record.title} — photo ${index + 1}`} />
-      {photos.length > 1 && <button className="photo-gallery-next" type="button" onClick={() => change(1)} aria-label={`Show next photo. Photo ${index + 1} of ${photos.length} is currently shown`}>→</button>}
+      {photos.length > 1 && <button className="photo-gallery-next" type="button" onClick={() => change(1)} aria-label={`Show next photo. Photo ${index + 1} of ${photos.length} is currently shown`}>&gt;</button>}
     </div>
   </div>;
 }
