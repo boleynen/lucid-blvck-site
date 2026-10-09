@@ -1658,3 +1658,31 @@ footer img {
   .photo-picker-card img { height: 120px; }
   .lightbox { padding-top: 80px; padding-bottom: 24px; align-content: start; }
 }
+
+/* Keep admin fields usable when the workspace becomes narrow. */
+@media (max-width: 900px) {
+  .admin .flash-form,
+  .admin .gallery-form,
+  .admin .shop-admin-form {
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch !important;
+    width: 100%;
+  }
+  .admin .flash-form > label,
+  .admin .gallery-form > label,
+  .admin .shop-admin-form > label,
+  .admin .flash-form > button,
+  .admin .gallery-form > button,
+  .admin .shop-admin-form > button {
+    width: 100%;
+    min-width: 0;
+  }
+  .admin input,
+  .admin select,
+  .admin textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+}
