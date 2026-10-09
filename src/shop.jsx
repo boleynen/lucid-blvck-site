@@ -57,7 +57,6 @@ export function ShopProduct({ product, Link, onAdd }) {
       <div className="shop-product-image"><PhotoGallery key={product.id} record={product} /></div>
       <article className="shop-product-copy">
         <Link to="/shop" className="shop-back"><ChevronLeft /> All specimens</Link>
-        <p className="shop-edition">Unique work · 1 of 1</p>
         <h1>{product.title}</h1>
         <p className="shop-description">{product.description}</p>
         <dl>

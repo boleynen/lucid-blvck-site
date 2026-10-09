@@ -54,16 +54,9 @@ export function PhotoGallery({ record }) {
   if (!selected) return null;
   const change = (offset) => setSelectedUrl(photos[(index + offset + photos.length) % photos.length].image_url);
   return <div className="photo-gallery">
-    <img className="photo-gallery-main" src={selected.image_url} alt={`${record.title} — photo ${index + 1}`} />
-    {photos.length > 1 && <>
-      <div className="photo-gallery-controls">
-        <button type="button" onClick={() => change(-1)} aria-label="Previous photo">←</button>
-        <span aria-live="polite">{index + 1} / {photos.length}</span>
-        <button type="button" onClick={() => change(1)} aria-label="Next photo">→</button>
-      </div>
-      <div className="photo-gallery-thumbs">{photos.map((photo, photoIndex) => <button type="button" key={photo.image_url} aria-label={`Show photo ${photoIndex + 1}`} aria-pressed={index === photoIndex} onClick={() => setSelectedUrl(photo.image_url)}>
-        <img src={photo.image_url} alt="" />
-      </button>)}</div>
-    </>}
+    <div className="photo-gallery-stage">
+      <img className="photo-gallery-main" src={selected.image_url} alt={`${record.title} — photo ${index + 1}`} />
+      {photos.length > 1 && <button className="photo-gallery-next" type="button" onClick={() => change(1)} aria-label={`Show next photo. Photo ${index + 1} of ${photos.length} is currently shown`}>→</button>}
+    </div>
   </div>;
 }
