@@ -49,14 +49,40 @@ export function PhotoPicker({ label, photos, coverId, onChange, disabled }) {
 export function PhotoGallery({ record }) {
   const photos = recordPhotos(record);
   const [selectedUrl, setSelectedUrl] = useState(record.image_url);
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [zoom, setZoom] = useState(1);
   const index = Math.max(0, photos.findIndex(photo => photo.image_url === selectedUrl));
   const selected = photos[index];
+  useEffect(() => {
+    if (!viewerOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    const closeOnEscape = (event) => { if (event.key === 'Escape') setViewerOpen(false); };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', closeOnEscape);
+    };
+  }, [viewerOpen]);
   if (!selected) return null;
   const change = (offset) => setSelectedUrl(photos[(index + offset + photos.length) % photos.length].image_url);
   return <div className="photo-gallery">
     <div className="photo-gallery-stage">
-      <img className="photo-gallery-main" src={selected.image_url} alt={`${record.title} — photo ${index + 1}`} />
+      <button className="photo-gallery-open" type="button" onClick={() => { setZoom(1); setViewerOpen(true); }} aria-label={`Enlarge ${record.title}, photo ${index + 1}`}>
+        <img className="photo-gallery-main" src={selected.image_url} alt={`${record.title} — photo ${index + 1}`} />
+      </button>
       {photos.length > 1 && <button className="photo-gallery-next" type="button" onClick={() => change(1)} aria-label={`Show next photo. Photo ${index + 1} of ${photos.length} is currently shown`}>&gt;</button>}
     </div>
+    {viewerOpen && <div className="photo-zoom" role="dialog" aria-modal="true" aria-label={`Enlarged view of ${record.title}`} onMouseDown={() => setViewerOpen(false)}>
+      <div className="photo-zoom-toolbar" onMouseDown={(event) => event.stopPropagation()}>
+        <button type="button" onClick={() => setZoom((value) => Math.max(1, value - .5))} disabled={zoom === 1} aria-label="Zoom out">−</button>
+        <span>{Math.round(zoom * 100)}%</span>
+        <button type="button" onClick={() => setZoom((value) => Math.min(3, value + .5))} disabled={zoom === 3} aria-label="Zoom in">+</button>
+        <button type="button" onClick={() => setViewerOpen(false)} aria-label="Close enlarged photo">×</button>
+      </div>
+      <div className="photo-zoom-canvas" onMouseDown={(event) => event.stopPropagation()}>
+        <img src={selected.image_url} alt={`${record.title} — enlarged photo ${index + 1}`} style={{ transform: `scale(${zoom})` }} onClick={() => setZoom((value) => value === 3 ? 1 : Math.min(3, value + .5))} />
+      </div>
+    </div>}
   </div>;
 }
