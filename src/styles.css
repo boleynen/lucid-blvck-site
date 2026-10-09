@@ -795,6 +795,9 @@ nav > a.active {
 .shop-card-copy strong { font: 12px/1.4 Inter, sans-serif; white-space: nowrap; }
 .shop-card > button,
 .shop-buy {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   width: 100%;
   display: flex;
   align-items: center;
@@ -807,11 +810,46 @@ nav > a.active {
   letter-spacing: .14em;
   text-transform: uppercase;
   cursor: pointer;
+  transition: background-color .25s ease, transform .16s ease, box-shadow .25s ease;
 }
+.shop-card > button::before,
+.shop-buy::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, #ffffff55 48%, transparent 66%);
+  transform: translateX(-130%);
+  transition: transform .55s ease;
+}
+.shop-card > button:hover::before,
+.shop-card > button:focus-visible::before,
+.shop-buy:hover::before,
+.shop-buy:focus-visible::before { transform: translateX(130%); }
+.shop-card > button:hover,
+.shop-card > button:focus-visible,
+.shop-buy:hover,
+.shop-buy:focus-visible { box-shadow: inset 0 0 0 1px var(--shop-ink); }
+.shop-card > button:active,
+.shop-buy:active { transform: scale(.985); }
 .shop-card > button svg,
-.shop-buy svg { width: 15px; height: 15px; }
+.shop-buy svg { width: 15px; height: 15px; transition: transform .25s ease; }
+.shop-card > button:hover svg,
+.shop-card > button:focus-visible svg { transform: rotate(90deg); }
+.shop-buy:hover svg,
+.shop-buy:focus-visible svg { transform: translateY(-2px) rotate(-4deg); }
 .shop-card > button:disabled,
 .shop-buy:disabled { opacity: .38; cursor: not-allowed; }
+.shop-card > button:disabled::before,
+.shop-buy:disabled::before { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .shop-card > button,
+  .shop-buy,
+  .shop-card > button::before,
+  .shop-buy::before,
+  .shop-card > button svg,
+  .shop-buy svg { transition: none; }
+}
 .shop-empty { min-height: 360px; display: flex; flex-direction: column; justify-content: center; padding: 40px; border: 1px solid #d8e2dc2b; }
 .shop-empty p { color: var(--shop-acid); font-size: 10px; text-transform: uppercase; letter-spacing: .16em; }
 .shop-empty h2 { max-width: 680px; font-size: clamp(38px, 5vw, 76px); }
