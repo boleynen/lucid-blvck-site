@@ -400,6 +400,44 @@ footer a {
   height: 60px;
   object-fit: cover;
 }
+.admin-list-actions { display: flex; gap: 8px; }
+.admin-list-actions button { padding: 11px; cursor: pointer; }
+.admin-list-actions svg { width: 16px; height: 16px; }
+.admin-edit-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #0d0d0cbd;
+  backdrop-filter: blur(5px);
+}
+.admin-edit-modal {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  padding: clamp(28px, 4vw, 48px);
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  box-shadow: 14px 14px 0 var(--accent);
+}
+.admin-edit-modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+.admin-edit-modal-head h2 { margin: 8px 0 28px; font: 700 clamp(24px, 4vw, 42px)/1 "Cinzel Decorative", Georgia, serif; }
+.admin-edit-close { padding: 10px !important; cursor: pointer; }
+.admin-edit-close svg { width: 18px; height: 18px; }
+.admin-edit-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.admin-edit-form label { display: grid; gap: 8px; font-size: 10px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.admin-edit-form input,
+.admin-edit-form textarea { width: 100%; padding: 14px; border: 1px solid var(--line); background: transparent; font: inherit; text-transform: none; letter-spacing: normal; resize: vertical; }
+.admin-edit-form .wide,
+.admin-edit-note,
+.admin-edit-form .form-message,
+.admin-edit-actions { grid-column: 1 / -1; }
+.admin-edit-note { margin: 0; color: #666; font-size: 12px; }
+.admin-edit-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.admin-edit-actions button { cursor: pointer; }
+.admin-edit-save { background: var(--accent) !important; }
 .missing {
   text-align: center;
 }
@@ -407,6 +445,13 @@ footer a {
   font-size: 70px;
 }
 @media (max-width: 760px) {
+  .admin-edit-backdrop { padding: 12px; }
+  .admin-edit-modal { max-height: calc(100vh - 24px); padding: 24px; box-shadow: 7px 7px 0 var(--accent); }
+  .admin-edit-form { grid-template-columns: 1fr; }
+  .admin-edit-form .wide,
+  .admin-edit-note,
+  .admin-edit-form .form-message,
+  .admin-edit-actions { grid-column: auto; }
   header {
     padding-top: 22px;
   }
