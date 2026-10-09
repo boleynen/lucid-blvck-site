@@ -731,9 +731,7 @@ nav > a.active {
 .shop-empty { min-height: 360px; display: flex; flex-direction: column; justify-content: center; padding: 40px; border: 1px solid #d8e2dc2b; }
 .shop-empty p { color: var(--shop-acid); font-size: 10px; text-transform: uppercase; letter-spacing: .16em; }
 .shop-empty h2 { max-width: 680px; font-size: clamp(38px, 5vw, 76px); }
-.shop-note { padding: 100px var(--pad) 80px; background: var(--shop-acid); color: var(--shop-ink); }
-.shop-note > p { font-size: 9px; letter-spacing: .16em; text-transform: uppercase; }
-.shop-note h2 { margin: 25px 0 60px; max-width: 950px; font-size: clamp(42px, 6vw, 94px); }
+.shop-note { padding: 36px var(--pad) 70px; background: var(--shop-ink); color: var(--shop-paper); }
 .shop-back { display: inline-flex; align-items: center; gap: 8px; border-bottom: 1px solid currentColor; padding-bottom: 6px; font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
 .shop-back svg { width: 14px; height: 14px; }
 
@@ -804,7 +802,7 @@ nav > a.active {
   .shop-collection { padding: 110px 20px 90px; }
   .shop-section-head > p { display: none; }
   .shop-grid { grid-template-columns: 1fr; }
-  .shop-note { padding: 75px 20px; }
+  .shop-note { padding: 35px 20px 55px; }
   .shop-product-page { padding-top: 72px; }
   .shop-product-image { min-height: 58vh; }
   .shop-product-copy { padding: 60px 20px 80px; }

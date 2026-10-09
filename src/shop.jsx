@@ -44,8 +44,6 @@ export function Shop({ products, Link, onAdd }) {
         )}
       </section>
       <section className="shop-note">
-        <p>Made slowly. Released irregularly.</p>
-        <h2>Art for people drawn<br />to stranger things.</h2>
         <Link to="/" className="shop-back"><ChevronLeft /> Return to Lucid Blvck</Link>
       </section>
     </main>
