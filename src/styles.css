@@ -738,7 +738,7 @@ nav > a.active {
 
 /* Lucid Entom — a distinct shop within Lucid Blvck */
 .shop-entry {
-  background: #bc8da0;
+  background: transparent;
   color: #10110f;
   border-color: #10110f;
   gap: 8px;
@@ -747,7 +747,11 @@ nav > a.active {
   font-weight: 700;
   letter-spacing: -.02em;
   text-transform: uppercase;
+  transition: background-color .22s ease, color .22s ease;
 }
+.shop-entry:hover,
+.shop-entry:focus-visible { background: #bc8da0; color: #10110f; }
+.shop-entry.active { background: #bc8da0; }
 .shop-entry svg,
 .shop-cart-trigger svg { width: 14px; height: 14px; }
 .shop-cart-trigger {
