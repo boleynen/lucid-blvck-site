@@ -903,11 +903,11 @@ nav > a.active {
 .shop-product-copy dd { margin: 0; font-size: 12px; text-align: right; }
 .shop-product-copy small { display: block; margin-top: 15px; color: #bc8da0; line-height: 1.5; }
 .shop-missing,
-.shop-success { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 120px var(--pad); background: #070206; color: #d8e2dc; }
+.shop-success { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 140px var(--pad) 80px; background: #070206; color: #d8e2dc; text-align: center; }
 .shop-success > p { color: #bc8da0; text-transform: uppercase; letter-spacing: .16em; font-size: 10px; }
-.shop-success h1 { margin: 20px 0; font: 700 clamp(55px, 9vw, 145px)/.8 "Cinzel Decorative", Georgia, serif; }
+.shop-success h1 { max-width: 850px; margin: 22px auto 28px; font: 700 clamp(28px, 4.2vw, 58px)/1.02 "Cinzel Decorative", Georgia, serif; }
 .shop-success span { max-width: 500px; color: #d8e2dcb5; line-height: 1.6; }
-.shop-success a { margin-top: 35px; display: inline-flex; gap: 12px; border-bottom: 1px solid #bc8da0; padding-bottom: 8px; }
+.shop-success a { margin: 35px auto 0; display: inline-flex; gap: 12px; border-bottom: 1px solid #bc8da0; padding-bottom: 8px; }
 
 .shop-cart-layer { position: fixed; z-index: 120; inset: 0; visibility: hidden; pointer-events: none; }
 .shop-cart-layer.open { visibility: visible; pointer-events: auto; }

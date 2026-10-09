@@ -115,5 +115,5 @@ export function CartDrawer({ open, items, onClose, onChange, onRemove }) {
 
 export function ShopSuccess({ Link, onClear }) {
   React.useEffect(() => onClear(), []);
-  return <main className="shop-success"><p>Payment complete</p><h1>Thank you.</h1><span>Your order has been received. A confirmation will follow by email.</span><Link to="/shop">Back to Lucid Entom <ArrowUpRight /></Link></main>;
+  return <main className="shop-success"><p>Payment complete</p><h1>Thank you for supporting independent artists</h1><span>Your order has been received. A confirmation will follow by email.</span><Link to="/shop">Back to Lucid Entom <ArrowUpRight /></Link></main>;
 }
