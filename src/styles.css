@@ -972,19 +972,29 @@ nav > a.active {
   .shop-admin-form .wide { grid-column: auto; }
 }
 .hero::before {
-  content: "";
+  content: none;
+}
+.hero-mark {
   position: absolute;
-  z-index: -1;
-  width: clamp(1050px, 92vw, 1500px);
-  aspect-ratio: 1;
-  right: 0;
-  bottom: 0;
-  background: url("/images/hero-ornament-v2.jpg") center/contain no-repeat;
-  opacity: 0.28;
-  mix-blend-mode: multiply;
-  transform: translate(50%, 50%);
-  -webkit-mask-image: radial-gradient(circle, #000 0 56%, transparent 76%);
-  mask-image: radial-gradient(circle, #000 0 56%, transparent 76%);
+  top: 52%;
+  left: 50%;
+  width: auto;
+  height: clamp(175px, 28vh, 285px);
+  transform: translate(-50%, -50%);
+  object-fit: contain;
+  opacity: .12;
+}
+.hero-studio {
+  position: absolute;
+  top: 52%;
+  left: calc(50% + clamp(115px, 12vw, 190px));
+  transform: translateY(-50%);
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 1.55;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 .micro,
 .section-head {
@@ -1399,9 +1409,10 @@ footer img {
     min-height: 420px;
   }
   .hero::before {
-    width: 900px;
-    opacity: 0.2;
+    content: none;
   }
+  .hero-mark { top: 52%; left: 42%; height: 155px; }
+  .hero-studio { top: 52%; left: 64%; font-size: 7px; line-height: 1.5; letter-spacing: .1em; white-space: normal; }
   .hero h1,
   .page-hero h1 {
     font-size: clamp(30px, 8.5vw, 42px);

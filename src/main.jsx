@@ -184,21 +184,14 @@ function Home({ items }) {
       <section className="hero">
         <div className="micro">
           <span>Kasterlee, Belgium</span>
-          <span>Private studio · Appointment only</span>
         </div>
-        <h1 className="hero-title">
-          <span>Lucid Blvck</span>
-          <i aria-hidden="true" />
-          <em>custom tattooing</em>
-        </h1>
+        <img className="hero-mark" src="/images/lucid-blvck-mark-black.png" alt="Lucid Blvck" />
+        <div className="hero-studio">Private tattoo studio<br />Appointment only</div>
         <p>
           Blackwork, illustrative
           <br />
           and ornamental tattooing.
         </p>
-        <a href="#flash-preview" className="down">
-          Available flash ↓
-        </a>
       </section>
       <section id="about" className="about">
         <p className="eyebrow">About the artist</p>
