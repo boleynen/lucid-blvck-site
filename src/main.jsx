@@ -41,7 +41,7 @@ import {
   updateTattoo,
 } from "./supabase";
 const BOOK = "https://tally.so/r/686Gdk",
-  IG = "https://www.instagram.com/lucidblvck.ttt/";
+  IG = "https://instagram.com/lucidblvck";
 const seed = [
   ["96e043e5-6142-44b7-8657-c4108d14adf7", "Necroform II"],
   ["52cd083b-05c0-4fde-9a67-2ed0d52e3ba2", "Necroform I"],
@@ -156,12 +156,33 @@ function Header({ cartCount = 0, onCartOpen }) {
     </>
   );
 }
-function Footer({ flash = false }) {
+function Footer() {
   return (
-    <footer>
-      <span>© 2026 LUCID BLVCK</span>
-      <img src="/images/lucid-blvck-mark-white.png" alt="Lucid Blvck" />
-      <a href="#top">{flash ? "All flash" : "Back to top"} ↑</a>
+    <footer className="site-footer">
+      <div className="site-footer-main">
+        <Link to="/" className="site-footer-brand">Lucid Blvck</Link>
+        <div className="site-footer-column">
+          <p>Explore</p>
+          <Link to="/flash">Available flash</Link>
+          <Link to="/tattoo-gallery">Tattoo gallery</Link>
+          <a href="#top">Back to top ↑</a>
+        </div>
+        <div className="site-footer-column">
+          <p>Contact</p>
+          <a href="mailto:lb.tatoo@icloud.com">lb.tatoo@icloud.com</a>
+          <span>Kasterlee, Belgium</span>
+        </div>
+        <div className="site-footer-column">
+          <p>Follow</p>
+          <a href={IG} target="_blank" rel="noopener noreferrer">
+            Instagram <ArrowUpRight />
+          </a>
+        </div>
+      </div>
+      <div className="site-footer-bottom">
+        <span>© 2026 Lucid Blvck</span>
+        <span>Independent tattoo artist · Kasterlee, Belgium.</span>
+      </div>
     </footer>
   );
 }
