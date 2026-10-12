@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { MAX_PHOTOS, MAX_PHOTO_BYTES, recordPhotos } from './photos.js';
 
 function PhotoPreview({ file }) {
@@ -73,16 +74,16 @@ export function PhotoGallery({ record }) {
       </button>
       {photos.length > 1 && <button className="photo-gallery-next" type="button" onClick={() => change(1)} aria-label={`Show next photo. Photo ${index + 1} of ${photos.length} is currently shown`}>&gt;</button>}
     </div>
-    {viewerOpen && <div className="photo-zoom" role="dialog" aria-modal="true" aria-label={`Enlarged view of ${record.title}`} onMouseDown={() => setViewerOpen(false)}>
+    {viewerOpen && createPortal(<div className="photo-zoom" role="dialog" aria-modal="true" aria-label={`Enlarged view of ${record.title}`} onMouseDown={() => setViewerOpen(false)}>
       <div className="photo-zoom-toolbar" onMouseDown={(event) => event.stopPropagation()}>
         <button type="button" onClick={() => setZoom((value) => Math.max(1, value - .5))} disabled={zoom === 1} aria-label="Zoom out">−</button>
         <span>{Math.round(zoom * 100)}%</span>
         <button type="button" onClick={() => setZoom((value) => Math.min(3, value + .5))} disabled={zoom === 3} aria-label="Zoom in">+</button>
-        <button type="button" onClick={() => setViewerOpen(false)} aria-label="Close enlarged photo">×</button>
+        <button className="photo-zoom-close" type="button" onClick={() => setViewerOpen(false)} aria-label="Close enlarged photo">Close ×</button>
       </div>
       <div className="photo-zoom-canvas" onMouseDown={(event) => event.stopPropagation()}>
         <img src={selected.image_url} alt={`${record.title} — enlarged photo ${index + 1}`} style={{ transform: `scale(${zoom})` }} onClick={() => setZoom((value) => value === 3 ? 1 : Math.min(3, value + .5))} />
       </div>
-    </div>}
+    </div>, document.body)}
   </div>;
 }
