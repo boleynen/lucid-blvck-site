@@ -1,4 +1,4 @@
-const DELIVERY_COUNTRIES = ["BE", "NL", "LU", "FR", "DE"];
+const DELIVERY_COUNTRIES = ["BE"];
 
 export default async function handler(request) {
   if (request.method !== "POST") return Response.json({ error: "Method not allowed" }, { status: 405 });
