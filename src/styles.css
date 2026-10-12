@@ -974,28 +974,12 @@ nav > a.active {
 .hero::before {
   content: none;
 }
-.hero-mark {
-  position: absolute;
-  top: 52%;
-  left: 50%;
-  width: auto;
-  height: clamp(175px, 28vh, 285px);
-  transform: translate(-50%, -50%);
-  object-fit: contain;
-  opacity: .12;
-}
-.hero-studio {
-  position: absolute;
-  top: 52%;
-  left: calc(50% + clamp(115px, 12vw, 190px));
-  transform: translateY(-50%);
-  font-size: 9px;
-  font-weight: 600;
-  line-height: 1.55;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
+.hero-identity { margin: auto 0; }
+.hero .hero-identity h1 { margin: 0 0 12px; font: 700 clamp(38px, 5vw, 72px)/.95 Inter, Arial, sans-serif; letter-spacing: -.055em; text-transform: uppercase; }
+.hero-identity p { margin: 0; font-size: clamp(12px, 1vw, 16px); line-height: 1.4; letter-spacing: 0; }
+.hero-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; font-size: 9px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+.hero-bottom a { display: inline-flex; align-items: center; gap: 12px; padding: 15px 18px; background: var(--ink); color: var(--paper); font-weight: 600; letter-spacing: .12em; }
+.hero-bottom a svg { width: 13px; height: 13px; }
 .micro,
 .section-head {
   font-size: 10px;
@@ -1411,8 +1395,11 @@ footer img {
   .hero::before {
     content: none;
   }
-  .hero-mark { top: 52%; left: 42%; height: 155px; }
-  .hero-studio { top: 52%; left: 64%; font-size: 7px; line-height: 1.5; letter-spacing: .1em; white-space: normal; }
+  .hero .micro { align-items: flex-start; flex-direction: row; gap: 20px; }
+  .hero .micro span:last-child { text-align: right; }
+  .hero-identity { margin: auto 0; }
+  .hero .hero-identity h1 { font-size: clamp(36px, 12vw, 54px); }
+  .hero-bottom { align-items: flex-start; flex-direction: column; gap: 18px; }
   .hero h1,
   .page-hero h1 {
     font-size: clamp(30px, 8.5vw, 42px);

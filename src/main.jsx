@@ -183,15 +183,17 @@ function Home({ items }) {
     <main id="top">
       <section className="hero">
         <div className="micro">
-          <span>Kasterlee, Belgium</span>
+          <span>Independent tattoo artist</span>
+          <span>Kasterlee — Belgium</span>
         </div>
-        <img className="hero-mark" src="/images/lucid-blvck-mark-black.png" alt="Lucid Blvck" />
-        <div className="hero-studio">Private tattoo studio<br />Appointment only</div>
-        <p>
-          Blackwork, illustrative
-          <br />
-          and ornamental tattooing.
-        </p>
+        <div className="hero-identity">
+          <h1>Lucid Blvck</h1>
+          <p>Blackwork / Illustrative / Ornamental</p>
+        </div>
+        <div className="hero-bottom">
+          <span>Private studio — appointment only</span>
+          <a href={BOOK} target="_blank" rel="noopener noreferrer">Book a tattoo <ArrowUpRight /></a>
+        </div>
       </section>
       <section id="about" className="about">
         <p className="eyebrow">About the artist</p>
