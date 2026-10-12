@@ -33,15 +33,18 @@ async function sendEmail({ to, subject, html, idempotencyKey }) {
   if (!response.ok) throw new Error(`Resend email failed: ${await response.text()}`);
 }
 
-async function sendOrderEmails(session, shipping) {
+async function loadStripeLineItems(sessionId) {
+  const response = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(sessionId)}/line_items?limit=100`, {
+    headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` },
+  });
+  if (!response.ok) throw new Error("Could not load Stripe order items");
+  return (await response.json()).data || [];
+}
+
+async function sendOrderEmails(session, shipping, lineItems) {
   const customerEmail = session.customer_details?.email;
   if (!process.env.RESEND_API_KEY || !process.env.ORDER_EMAIL_FROM || !process.env.ORDER_NOTIFICATION_EMAIL || !customerEmail) return;
 
-  const lineResponse = await fetch(`https://api.stripe.com/v1/checkout/sessions/${encodeURIComponent(session.id)}/line_items?limit=100`, {
-    headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` },
-  });
-  if (!lineResponse.ok) throw new Error("Could not load Stripe order items for confirmation email");
-  const lineItems = (await lineResponse.json()).data || [];
   const reference = session.id.slice(-10).toUpperCase();
   const rows = lineItems.map(item => `<tr><td style="padding:10px 0;border-bottom:1px solid #d8d4ca">${escapeHtml(item.description)} × ${item.quantity}</td><td style="padding:10px 0;border-bottom:1px solid #d8d4ca;text-align:right">${escapeHtml(money(item.amount_total, session.currency))}</td></tr>`).join("");
   const address = addressLines(shipping).map(escapeHtml).join("<br>");
@@ -86,7 +89,8 @@ export default async function handler(request) {
     const event = JSON.parse(payload);
     const session = event.data?.object;
     if (["checkout.session.completed", "checkout.session.async_payment_succeeded"].includes(event.type) && session?.payment_status === "paid") {
-      const items = JSON.parse(session.metadata?.inventory || "[]").map(([id, quantity]) => ({ id, quantity }));
+      const lineItems = await loadStripeLineItems(session.id);
+      const items = JSON.parse(session.metadata?.inventory || "[]").map(([id, quantity], index) => ({ id, quantity, title: lineItems[index]?.description || null }));
       if (!items.length) throw new Error("Checkout session contains no inventory");
       const supabaseUrl = process.env.VITE_SUPABASE_URL?.replace(/\/$/, "");
       const secretKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -107,7 +111,7 @@ export default async function handler(request) {
         }),
       });
       if (!response.ok) throw new Error(await response.text());
-      await sendOrderEmails(session, shipping);
+      await sendOrderEmails(session, shipping, lineItems);
     }
     return new Response("ok", { status: 200 });
   } catch (error) {

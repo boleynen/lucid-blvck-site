@@ -1062,7 +1062,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
                     <p>Products</p>
                     {orderedItems.map((item, index) => {
                       const product = products.find((entry) => entry.id === item.id);
-                      return <div key={`${item.id}-${index}`}><span>{product?.title || `Product ${item.id}`}</span><strong>× {item.quantity}</strong></div>;
+                      return <div key={`${item.id}-${index}`}><span>{item.title || product?.title || "Productnaam niet beschikbaar"}</span><strong>× {item.quantity}</strong></div>;
                     })}
                   </section>
                   <section>
