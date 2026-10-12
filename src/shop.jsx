@@ -7,8 +7,33 @@ export const euro = (cents = 0) => new Intl.NumberFormat("en-BE", {
   currency: "EUR",
 }).format(cents / 100);
 
+function ShopFooter({ Link }) {
+  return <footer className="shop-footer">
+    <div className="shop-footer-main">
+      <Link to="/shop" className="shop-footer-brand">Lucid Entom</Link>
+      <div className="shop-footer-column">
+        <p>Collection</p>
+        <Link to="/shop">Available specimens</Link>
+        <a href="#top">Back to top ↑</a>
+      </div>
+      <div className="shop-footer-column">
+        <p>Contact</p>
+        <a href="mailto:lb.tattoo@icloud.com">lb.tattoo@icloud.com</a>
+        <span>Kasterlee, Belgium</span>
+      </div>
+      <div className="shop-footer-column">
+        <p>Follow</p>
+        <a href="https://instagram.com/lucidblvck.ttt" target="_blank" rel="noopener noreferrer">Instagram <ArrowUpRight /></a>
+        <Link to="/">Lucid Blvck <ArrowUpRight /></Link>
+      </div>
+    </div>
+    <div className="shop-footer-bottom"><span>© 2026 Lucid Entom</span><span>Original artwork by Lucid Blvck · Kasterlee, Belgium.</span></div>
+  </footer>;
+}
+
 export function Shop({ products, Link, onAdd }) {
   return (
+    <>
     <main className="objects-shop" id="top">
       <section className="shop-collection" id="collection">
         <div className="shop-section-head">
@@ -48,13 +73,16 @@ export function Shop({ products, Link, onAdd }) {
         <Link to="/" className="shop-back"><ChevronLeft /> Return to Lucid Blvck</Link>
       </section>
     </main>
+    <ShopFooter Link={Link} />
+    </>
   );
 }
 
 export function ShopProduct({ product, Link, onAdd }) {
-  if (!product) return <main className="shop-missing"><p>Specimen unavailable.</p><Link to="/shop">Return to the collection</Link></main>;
+  if (!product) return <><main className="shop-missing"><p>Specimen unavailable.</p><Link to="/shop">Return to the collection</Link></main><ShopFooter Link={Link} /></>;
   return (
-    <main className="objects-shop shop-product-page">
+    <>
+    <main className="objects-shop shop-product-page" id="top">
       <div className="shop-product-image"><PhotoGallery key={product.id} record={product} /></div>
       <article className="shop-product-copy">
         <Link to="/shop" className="shop-back"><ChevronLeft /> All specimens</Link>
@@ -73,6 +101,8 @@ export function ShopProduct({ product, Link, onAdd }) {
         <small className="shop-product-shipping-note">Delivery within Belgium only</small>
       </article>
     </main>
+    <ShopFooter Link={Link} />
+    </>
   );
 }
 
@@ -117,5 +147,8 @@ export function CartDrawer({ open, items, onClose, onChange, onRemove }) {
 
 export function ShopSuccess({ Link, onClear }) {
   React.useEffect(() => onClear(), []);
-  return <main className="shop-success"><p>Payment complete</p><h1>Thank you for supporting independent artists</h1><span>Your order has been received. A confirmation will follow by email.</span><Link to="/shop">Back to Lucid Entom <ArrowUpRight /></Link></main>;
+  return <>
+    <main className="shop-success" id="top"><p>Payment complete</p><h1>Thank you for supporting independent artists</h1><span>Your order has been received. A confirmation will follow by email.</span><Link to="/shop">Back to Lucid Entom <ArrowUpRight /></Link></main>
+    <ShopFooter Link={Link} />
+  </>;
 }
