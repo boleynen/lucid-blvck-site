@@ -1625,10 +1625,13 @@ footer img {
     margin-bottom: -20px;
   }
 }
+}
 
 /* Compact section actions */
 .section > .wide-link {
-  width: min(340px, 100%);
+  width: fit-content;
+  min-width: 280px;
+  max-width: 100%;
   margin-left: auto;
 }
 
@@ -1701,7 +1704,8 @@ footer.site-footer {
 
 @media (max-width: 760px) {
   .section > .wide-link {
-    width: min(300px, 100%);
+    width: fit-content;
+    min-width: min(260px, 100%);
   }
   footer.site-footer {
     padding: 60px 22px 22px;
@@ -1718,7 +1722,6 @@ footer.site-footer {
     display: grid;
     line-height: 1.5;
   }
-}
 }
 
 /* Tattoo gallery */
