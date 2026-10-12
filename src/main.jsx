@@ -41,7 +41,7 @@ import {
   updateTattoo,
 } from "./supabase";
 const BOOK = "https://tally.so/r/686Gdk",
-  IG = "https://instagram.com/lucidblvck";
+  IG = "https://instagram.com/lucidblvck.ttt";
 const seed = [
   ["96e043e5-6142-44b7-8657-c4108d14adf7", "Necroform II"],
   ["52cd083b-05c0-4fde-9a67-2ed0d52e3ba2", "Necroform I"],
