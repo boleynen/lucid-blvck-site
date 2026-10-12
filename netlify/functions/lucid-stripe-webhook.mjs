@@ -47,7 +47,7 @@ async function sendOrderEmails(session, shipping) {
   const address = addressLines(shipping).map(escapeHtml).join("<br>");
   const frameStart = `<div style="margin:0;background:#ebe7de;color:#0d0d0c;font-family:Arial,sans-serif"><div style="max-width:620px;margin:auto;padding:46px 28px"><p style="margin:0 0 34px;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">Lucid Entom · By Lucid Blvck</p>`;
   const orderDetails = `<table style="width:100%;border-collapse:collapse;margin:28px 0">${rows}<tr><td style="padding:18px 0;font-weight:700">Total</td><td style="padding:18px 0;text-align:right;font-weight:700">${escapeHtml(money(session.amount_total, session.currency))}</td></tr></table><p style="font-size:12px;line-height:1.7"><strong>Delivery address</strong><br>${address}</p><p style="margin-top:28px;font-size:11px;color:#625e57">Order reference: ${escapeHtml(reference)}</p>`;
-  const frameEnd = `<p style="margin-top:42px;padding-top:20px;border-top:1px solid #b9b5aa;font-size:11px;line-height:1.6">Questions about your order? Contact <a style="color:#0d0d0c" href="mailto:lb.tatoo@icloud.com">lb.tatoo@icloud.com</a>.</p></div></div>`;
+  const frameEnd = `<p style="margin-top:42px;padding-top:20px;border-top:1px solid #b9b5aa;font-size:11px;line-height:1.6">Questions about your order? Contact <a style="color:#0d0d0c" href="mailto:lb.tattoo@icloud.com">lb.tattoo@icloud.com</a>.</p></div></div>`;
   const customerName = shipping?.name || session.customer_details?.name || "there";
 
   await Promise.all([

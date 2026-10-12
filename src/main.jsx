@@ -169,7 +169,7 @@ function Footer() {
         </div>
         <div className="site-footer-column">
           <p>Contact</p>
-          <a href="mailto:lb.tatoo@icloud.com">lb.tatoo@icloud.com</a>
+          <a href="mailto:lb.tattoo@icloud.com">lb.tattoo@icloud.com</a>
           <span>Kasterlee, Belgium</span>
         </div>
         <div className="site-footer-column">
