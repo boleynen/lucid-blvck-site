@@ -15,6 +15,7 @@ export function Shop({ products, Link, onAdd }) {
           <div><span>01</span><p>Available specimens</p></div>
           <p>{products.length} unique {products.length === 1 ? "work" : "works"}</p>
         </div>
+        <p className="shop-shipping-notice">Currently accepting orders for delivery within Belgium only.</p>
         {products.length ? (
           <div className="shop-grid">
             {products.map((product, index) => (
@@ -69,6 +70,7 @@ export function ShopProduct({ product, Link, onAdd }) {
           {product.stock_quantity > 0 ? "Add to cart" : "Sold"} <ShoppingBag />
         </button>
         <small>Secure payment through Stripe · Shipping calculated for this work</small>
+        <small className="shop-product-shipping-note">Delivery within Belgium only</small>
       </article>
     </main>
   );
