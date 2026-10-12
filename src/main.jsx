@@ -192,7 +192,6 @@ function Home({ items }) {
         </div>
         <div className="hero-bottom">
           <span>Private studio — appointment only</span>
-          <a href={BOOK} target="_blank" rel="noopener noreferrer">Book a tattoo <ArrowUpRight /></a>
         </div>
       </section>
       <section id="about" className="about">
