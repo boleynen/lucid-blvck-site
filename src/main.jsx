@@ -240,13 +240,8 @@ function Home({ items, products }) {
       </section>
       <section className="section entom-preview">
         <div className="section-head">
-          <div>
-            <p className="eyebrow">Lucid Entom</p>
-            <h2>Original artwork &amp; curious objects.</h2>
-          </div>
-          <Link to="/shop">
-            Visit the webshop <ArrowUpRight />
-          </Link>
+          <p className="eyebrow">Lucid Entom</p>
+          <p className="entom-preview-intro">Original artwork &amp; curious objects.</p>
         </div>
         {products.length ? (
           <div className="entom-preview-grid">
@@ -269,7 +264,7 @@ function Home({ items, products }) {
           Discover Lucid Entom <ArrowUpRight />
         </Link>
       </section>
-      <section className="instagram">
+      <section className="instagram" hidden>
         <div>
           <p className="eyebrow">Latest on Instagram</p>
           <a href={IG}>
