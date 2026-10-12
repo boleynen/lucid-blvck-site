@@ -62,6 +62,9 @@ The shop treats each insect artwork as a physical product. Stock defaults to one
    - `SUPABASE_SECRET_KEY` (server-only; a legacy `SUPABASE_SERVICE_ROLE_KEY` also works)
    - `STRIPE_SECRET_KEY`
    - `STRIPE_WEBHOOK_SECRET`
+   - `RESEND_API_KEY`
+   - `ORDER_EMAIL_FROM` (for example `Lucid Entom <orders@lucidblvck.be>` after verifying `lucidblvck.be` in Resend)
+   - `ORDER_NOTIFICATION_EMAIL` (the address that receives new-order notifications)
 3. In Stripe Workbench → Webhooks, create an endpoint at:
 
 ```text
@@ -70,6 +73,8 @@ https://lucidblvck.be/.netlify/functions/lucid-stripe-webhook
 
 Subscribe it to `checkout.session.completed` and `checkout.session.async_payment_succeeded`, then copy its signing secret into `STRIPE_WEBHOOK_SECRET` in Netlify.
 4. Redeploy the site. Add products at `/admin/flash`; customers can then buy them at `/shop`.
+
+For automatic order emails, create a Resend account, verify the sending domain, and add the three Resend variables above in Netlify. After a paid Stripe order, the buyer receives a branded confirmation and `ORDER_NOTIFICATION_EMAIL` receives the order details. Idempotency keys based on the Stripe Checkout Session prevent duplicate messages when Stripe retries a webhook.
 
 Prices and stock are always read again on the server before Stripe Checkout is created. Stripe and Supabase secret keys are used only by the Netlify functions and must never be added to frontend code or committed to Git.
 
