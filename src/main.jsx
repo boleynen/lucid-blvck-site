@@ -22,6 +22,7 @@ import {
   deleteShopProduct,
   deleteTattoo,
   fetchFlash,
+  fetchShopOrders,
   fetchShopProducts,
   fetchTattoos,
   getSession,
@@ -577,6 +578,9 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     [editShopCover, setEditShopCover] = useState(""),
     [editShopMessage, setEditShopMessage] = useState(""),
     [editShopSaving, setEditShopSaving] = useState(false),
+    [orders, setOrders] = useState([]),
+    [ordersLoading, setOrdersLoading] = useState(false),
+    [ordersMessage, setOrdersMessage] = useState(""),
     [adminSection, setAdminSection] = useState("shop"),
     [sessionExpired, setSessionExpired] = useState(false);
   useEffect(() => {
@@ -584,6 +588,17 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     window.addEventListener("lucid-session-expired", expired);
     return () => window.removeEventListener("lucid-session-expired", expired);
   }, []);
+  useEffect(() => {
+    if (!session) return;
+    let active = true;
+    setOrdersLoading(true);
+    setOrdersMessage("");
+    fetchShopOrders()
+      .then((records) => { if (active) setOrders(records); })
+      .catch((error) => { if (active) setOrdersMessage(error.message); })
+      .finally(() => { if (active) setOrdersLoading(false); });
+    return () => { active = false; };
+  }, [session]);
   if (!databaseConfigured)
     return (
       <main className="admin">
@@ -878,6 +893,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           <button className={adminSection === "shop" ? "active" : ""} onClick={() => setAdminSection("shop")}><span>01</span> Shop objects <small>{products.length}</small></button>
           <button className={adminSection === "flash" ? "active" : ""} onClick={() => setAdminSection("flash")}><span>02</span> Flash <small>{remote.length}</small></button>
           <button className={adminSection === "gallery" ? "active" : ""} onClick={() => setAdminSection("gallery")}><span>03</span> Tattoo gallery <small>{gallery.length}</small></button>
+          <button className={adminSection === "orders" ? "active" : ""} onClick={() => setAdminSection("orders")}><span>04</span> Orders <small>{orders.length}</small></button>
           <Link to="/shop">View shop <ArrowUpRight /></Link>
           <button className="admin-signout" onClick={logout}><LogOut /> Sign out</button>
         </aside>
@@ -1014,6 +1030,51 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           {products.map((item) => <div key={item.id}><img src={item.image_url} alt="" /><Link className="admin-item-link" to={`/shop/${item.id}`}>{item.title} · €{(item.price_cents / 100).toFixed(2)} · Stock {item.stock_quantity}</Link><div className="admin-list-actions"><button aria-label={`Edit ${item.title}`} onClick={() => openShopEditor(item)}><Pencil /></button><button aria-label={`Delete ${item.title}`} onClick={() => removeShopProduct(item)}><Trash2 /></button></div></div>)}
           {!products.length && <p className="empty">No shop objects published yet.</p>}
         </PublishedWorks>
+        </div>}
+        {adminSection === "orders" && <div className="admin-panel admin-orders" id="admin-orders">
+          <div className="admin-section-title">
+            <p className="eyebrow">Lucid Entom shop</p>
+            <h2>Orders.</h2>
+          </div>
+          <p className="admin-orders-intro">Alle succesvol betaalde Stripe-bestellingen, nieuwste eerst.</p>
+          {ordersLoading && <p className="notice">Orders worden geladen…</p>}
+          {ordersMessage && <p className="notice" role="alert">{ordersMessage}</p>}
+          {!ordersLoading && !ordersMessage && <div className="admin-order-list">
+            {orders.map((order) => {
+              const address = order.shipping_address || {};
+              const orderedItems = Array.isArray(order.items) ? order.items : [];
+              return <details className="admin-order" key={order.id}>
+                <summary>
+                  <div><strong>{order.customer_name || "Naam niet opgegeven"}</strong><span>{new Intl.DateTimeFormat("nl-BE", { dateStyle: "medium", timeStyle: "short" }).format(new Date(order.created_at))}</span></div>
+                  <div><span className={`admin-order-status ${order.status}`}>{order.status === "new" ? "Nieuw" : order.status}</span><strong>{euro(order.amount_total)}</strong></div>
+                </summary>
+                <div className="admin-order-details">
+                  <section>
+                    <p>Customer</p>
+                    <strong>{order.customer_name || "—"}</strong>
+                    <a href={`mailto:${order.customer_email}`}>{order.customer_email || "Geen e-mail"}</a>
+                  </section>
+                  <section>
+                    <p>Delivery address</p>
+                    <address>{[address.line1, address.line2, [address.postal_code, address.city].filter(Boolean).join(" "), address.country].filter(Boolean).map((line) => <React.Fragment key={line}>{line}<br /></React.Fragment>)}</address>
+                  </section>
+                  <section className="admin-order-products">
+                    <p>Products</p>
+                    {orderedItems.map((item, index) => {
+                      const product = products.find((entry) => entry.id === item.id);
+                      return <div key={`${item.id}-${index}`}><span>{product?.title || `Product ${item.id}`}</span><strong>× {item.quantity}</strong></div>;
+                    })}
+                  </section>
+                  <section>
+                    <p>Payment</p>
+                    <strong>Paid · {euro(order.amount_total)}</strong>
+                    <span>{order.stripe_session_id}</span>
+                  </section>
+                </div>
+              </details>;
+            })}
+            {!orders.length && <p className="admin-orders-empty">Nog geen betaalde bestellingen.</p>}
+          </div>}
         </div>}
         {editingFlashItem && <div className="admin-edit-backdrop" role="presentation" onMouseDown={closeFlashEditor}>
           <section className="admin-edit-modal" role="dialog" aria-modal="true" aria-labelledby="flash-edit-title" onMouseDown={(e) => e.stopPropagation()}>
