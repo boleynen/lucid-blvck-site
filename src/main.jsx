@@ -15,7 +15,7 @@ import {
 import "./styles.css";
 import { PhotoPicker, PhotoGallery } from "./photos.jsx";
 import { publishPhotos, recordPhotos, removeRecordPhotos } from "./photos.js";
-import { CartDrawer, Shop, ShopProduct, ShopSuccess } from "./shop";
+import { CartDrawer, Shop, ShopProduct, ShopSuccess, euro } from "./shop";
 import {
   databaseConfigured,
   deleteFlash,
@@ -178,7 +178,7 @@ function Card({ x }) {
     </Link>
   );
 }
-function Home({ items }) {
+function Home({ items, products }) {
   return (
     <main id="top">
       <section className="hero">
@@ -236,6 +236,37 @@ function Home({ items }) {
         </div>
         <Link to="/flash" className="wide-link">
           View all available flash <ArrowUpRight />
+        </Link>
+      </section>
+      <section className="section entom-preview">
+        <div className="section-head">
+          <div>
+            <p className="eyebrow">Lucid Entom</p>
+            <h2>Original artwork &amp; curious objects.</h2>
+          </div>
+          <Link to="/shop">
+            Visit the webshop <ArrowUpRight />
+          </Link>
+        </div>
+        {products.length ? (
+          <div className="entom-preview-grid">
+            {products.slice(0, 3).map((product) => (
+              <Link to={`/shop/${product.id}`} className="entom-preview-card" key={product.id}>
+                <div className="entom-preview-image">
+                  <img src={product.image_url} alt={product.title} />
+                </div>
+                <div>
+                  <h3>{product.title}</h3>
+                  <span>{product.stock_quantity > 0 ? euro(product.price_cents) : "Sold"}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <p className="entom-preview-empty">New work is being prepared for the collection.</p>
+        )}
+        <Link to="/shop" className="wide-link">
+          Discover Lucid Entom <ArrowUpRight />
         </Link>
       </section>
       <section className="instagram">
@@ -1077,7 +1108,7 @@ function App() {
   const page = useMemo(
     () =>
       path === "/" ? (
-        <Home items={items} />
+        <Home items={items} products={products} />
       ) : path === "/flash" ? (
         <Flash items={items} />
       ) : path === "/tattoo-gallery" ? (
