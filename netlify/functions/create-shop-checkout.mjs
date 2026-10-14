@@ -37,9 +37,9 @@ export default async function handler(request) {
     params.set("shipping_options[0][shipping_rate_data][fixed_amount][currency]", "eur");
     params.set("shipping_options[0][shipping_rate_data][display_name]", "Tracked shipping in Belgium");
     params.set("shipping_options[0][shipping_rate_data][delivery_estimate][minimum][unit]", "business_day");
-    params.set("shipping_options[0][shipping_rate_data][delivery_estimate][minimum][value]", "1");
+    params.set("shipping_options[0][shipping_rate_data][delivery_estimate][minimum][value]", "5");
     params.set("shipping_options[0][shipping_rate_data][delivery_estimate][maximum][unit]", "business_day");
-    params.set("shipping_options[0][shipping_rate_data][delivery_estimate][maximum][value]", "3");
+    params.set("shipping_options[0][shipping_rate_data][delivery_estimate][maximum][value]", "10");
 
     params.set("shipping_options[1][shipping_rate_data][type]", "fixed_amount");
     params.set("shipping_options[1][shipping_rate_data][fixed_amount][amount]", "0");
