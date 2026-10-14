@@ -98,7 +98,7 @@ export function ShopProduct({ product, Link, onAdd }) {
         <button className="shop-buy" type="button" disabled={product.stock_quantity < 1} onClick={() => onAdd(product)}>
           {product.stock_quantity > 0 ? "Add to cart" : "Sold"} <ShoppingBag />
         </button>
-        <small>Secure payment through Stripe · Shipping calculated for this work</small>
+        <small>Secure online payment · Shipping calculated for this work</small>
         <small className="shop-product-shipping-note">Delivery within Belgium only · <Link to="/shop/shipping">Shipping info</Link></small>
       </article>
     </main>
@@ -153,7 +153,7 @@ export function ShippingInfo({ Link }) {
         <Link to="/shop" className="shop-back"><ChevronLeft /> Back to the collection</Link>
         <p>Shipping & pickup</p>
         <h1>Delivery of your artwork.</h1>
-        <p className="shop-policy-intro">Lucid Entom currently accepts orders within Belgium only. Choose your preferred option securely during Stripe Checkout.</p>
+        <p className="shop-policy-intro">Lucid Entom currently accepts orders within Belgium only. Choose your preferred option during secure checkout.</p>
       </div>
 
       <div className="shop-policy-options">
