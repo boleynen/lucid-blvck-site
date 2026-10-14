@@ -15,7 +15,7 @@ import {
 import "./styles.css";
 import { PhotoPicker, PhotoGallery } from "./photos.jsx";
 import { publishPhotos, recordPhotos, removeRecordPhotos } from "./photos.js";
-import { CartDrawer, Shop, ShopProduct, ShopSuccess, euro } from "./shop";
+import { CartDrawer, ShippingInfo, Shop, ShopProduct, ShopSuccess, euro } from "./shop";
 import {
   databaseConfigured,
   deleteFlash,
@@ -89,12 +89,14 @@ function go(path) {
   dispatchEvent(new PopStateEvent("popstate"));
   scrollTo(0, 0);
 }
-function Link({ to, children, className = "" }) {
+function Link({ to, children, className = "", onClick }) {
   return (
     <a
       href={to}
       className={className}
       onClick={(e) => {
+        onClick?.(e);
+        if (e.defaultPrevented) return;
         if (to.startsWith("/")) {
           e.preventDefault();
           go(to);
@@ -1192,6 +1194,8 @@ function App() {
         <TattooGallery items={gallery} />
       ) : path === "/shop" ? (
         <Shop products={products} Link={Link} onAdd={addToCart} />
+      ) : path === "/shop/shipping" ? (
+        <ShippingInfo Link={Link} />
       ) : path === "/checkout/success" ? (
         <ShopSuccess Link={Link} onClear={() => setCart([])} />
       ) : ["/admin", "/admin/", "/admin/flash", "/admin/flash/"].includes(path) ? (
@@ -1216,7 +1220,7 @@ function App() {
     <>
       <Header cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)} onCartOpen={() => setCartOpen(true)} />
       {page}
-      <CartDrawer open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onChange={(id, quantity) => setCart((current) => quantity < 1 ? current.filter((item) => item.id !== id) : current.map((item) => item.id === id ? { ...item, quantity: Math.min(quantity, item.stock_quantity) } : item))} onRemove={(id) => setCart((current) => current.filter((item) => item.id !== id))} />
+      <CartDrawer open={cartOpen} items={cart} onClose={() => setCartOpen(false)} onChange={(id, quantity) => setCart((current) => quantity < 1 ? current.filter((item) => item.id !== id) : current.map((item) => item.id === id ? { ...item, quantity: Math.min(quantity, item.stock_quantity) } : item))} onRemove={(id) => setCart((current) => current.filter((item) => item.id !== id))} Link={Link} />
     </>
   );
 }

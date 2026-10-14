@@ -14,6 +14,7 @@ function ShopFooter({ Link }) {
       <div className="shop-footer-column">
         <p>Collection</p>
         <Link to="/shop">Available specimens</Link>
+        <Link to="/shop/shipping">Shipping & pickup</Link>
         <a href="#top">Back to top ↑</a>
       </div>
       <div className="shop-footer-column">
@@ -40,7 +41,7 @@ export function Shop({ products, Link, onAdd }) {
           <div><span>01</span><p>Available specimens</p></div>
           <p>{products.length} unique {products.length === 1 ? "work" : "works"}</p>
         </div>
-        <p className="shop-shipping-notice">Currently accepting orders for delivery within Belgium only.</p>
+        <p className="shop-shipping-notice">Currently accepting orders within Belgium only. <Link to="/shop/shipping">Shipping info →</Link></p>
         {products.length ? (
           <div className="shop-grid">
             {products.map((product, index) => (
@@ -98,7 +99,7 @@ export function ShopProduct({ product, Link, onAdd }) {
           {product.stock_quantity > 0 ? "Add to cart" : "Sold"} <ShoppingBag />
         </button>
         <small>Secure payment through Stripe · Shipping calculated for this work</small>
-        <small className="shop-product-shipping-note">Delivery within Belgium only</small>
+        <small className="shop-product-shipping-note">Delivery within Belgium only · <Link to="/shop/shipping">Shipping info</Link></small>
       </article>
     </main>
     <ShopFooter Link={Link} />
@@ -106,7 +107,7 @@ export function ShopProduct({ product, Link, onAdd }) {
   );
 }
 
-export function CartDrawer({ open, items, onClose, onChange, onRemove }) {
+export function CartDrawer({ open, items, onClose, onChange, onRemove, Link }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const total = items.reduce((sum, item) => sum + item.price_cents * item.quantity, 0);
@@ -138,11 +139,55 @@ export function CartDrawer({ open, items, onClose, onChange, onRemove }) {
             <div><h3>{item.title}</h3><p>{item.dimensions}</p><div className="shop-quantity"><button onClick={() => onChange(item.id, item.quantity - 1)}><Minus /></button><span>{item.quantity}</span><button onClick={() => onChange(item.id, item.quantity + 1)} disabled={item.quantity >= item.stock_quantity}><Plus /></button></div></div>
             <div><strong>{euro(item.price_cents * item.quantity)}</strong><button onClick={() => onRemove(item.id)}>Remove</button></div>
           </article>)}</div>
-          <footer className="shop-cart-summary"><div><span>Subtotal</span><strong>{euro(total)}</strong></div><p>Shipping is added securely at checkout.</p>{error && <p className="shop-checkout-error">{error}</p>}<button onClick={checkout} disabled={loading}>{loading ? "Opening checkout…" : "Secure checkout"} <ArrowUpRight /></button></footer>
+          <footer className="shop-cart-summary"><div><span>Subtotal</span><strong>{euro(total)}</strong></div><p>Choose tracked shipping or free local pickup at checkout. <Link to="/shop/shipping" onClick={onClose}>Shipping info →</Link></p>{error && <p className="shop-checkout-error">{error}</p>}<button onClick={checkout} disabled={loading}>{loading ? "Opening checkout…" : "Secure checkout"} <ArrowUpRight /></button></footer>
         </>}
       </aside>
     </div>
   );
+}
+
+export function ShippingInfo({ Link }) {
+  return <>
+    <main className="shop-policy-page" id="top">
+      <div className="shop-policy-heading">
+        <Link to="/shop" className="shop-back"><ChevronLeft /> Back to the collection</Link>
+        <p>Shipping & pickup</p>
+        <h1>Delivery of your artwork.</h1>
+        <p className="shop-policy-intro">Lucid Entom currently accepts orders within Belgium only. Choose your preferred option securely during Stripe Checkout.</p>
+      </div>
+
+      <div className="shop-policy-options">
+        <section>
+          <span>01</span>
+          <h2>Tracked shipping in Belgium</h2>
+          <p>Tracked shipping is available to Belgian addresses. The exact shipping cost is displayed during checkout before payment.</p>
+          <p>The estimated delivery time is <strong>5–10 business days from the moment you place your order</strong>. This includes careful preparation, packaging and transit.</p>
+          <p>You will receive a confirmation email when your order has been shipped, including tracking information when available.</p>
+        </section>
+        <section>
+          <span>02</span>
+          <h2>Local pickup in Kasterlee</h2>
+          <p>Local pickup is free and available by appointment only.</p>
+          <p>After payment, you will receive an email to arrange a suitable pickup time. The exact pickup details will be shared privately once your artwork is ready.</p>
+        </section>
+      </div>
+
+      <div className="shop-policy-details">
+        <section>
+          <p>Packaging & responsibility</p>
+          <h2>Prepared with care.</h2>
+          <p>Each artwork is unique and may contain delicate natural elements. Every piece is carefully packaged to protect it during transport. Lucid Entom remains responsible for shipped orders until they have been delivered.</p>
+        </section>
+        <section>
+          <p>Damage or delivery issues</p>
+          <h2>Let me know quickly.</h2>
+          <p>If your parcel arrives damaged, photograph the artwork, parcel and all packaging and contact <a href="mailto:lb.tattoo@icloud.com">lb.tattoo@icloud.com</a> as soon as possible.</p>
+          <p>Please verify your delivery address before payment. Additional shipping costs may apply if an order must be sent again because an incorrect or incomplete address was provided.</p>
+        </section>
+      </div>
+    </main>
+    <ShopFooter Link={Link} />
+  </>;
 }
 
 export function ShopSuccess({ Link, onClear }) {
