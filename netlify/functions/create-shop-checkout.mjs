@@ -32,12 +32,19 @@ export default async function handler(request) {
       cancel_url: `${origin}/shop`,
     });
     DELIVERY_COUNTRIES.forEach((country, index) => params.set(`shipping_address_collection[allowed_countries][${index}]`, country));
-    if (shippingAmount > 0) {
-      params.set("shipping_options[0][shipping_rate_data][type]", "fixed_amount");
-      params.set("shipping_options[0][shipping_rate_data][fixed_amount][amount]", String(shippingAmount));
-      params.set("shipping_options[0][shipping_rate_data][fixed_amount][currency]", "eur");
-      params.set("shipping_options[0][shipping_rate_data][display_name]", "Tracked shipping");
-    }
+    params.set("shipping_options[0][shipping_rate_data][type]", "fixed_amount");
+    params.set("shipping_options[0][shipping_rate_data][fixed_amount][amount]", String(shippingAmount));
+    params.set("shipping_options[0][shipping_rate_data][fixed_amount][currency]", "eur");
+    params.set("shipping_options[0][shipping_rate_data][display_name]", "Tracked shipping in Belgium");
+    params.set("shipping_options[0][shipping_rate_data][delivery_estimate][minimum][unit]", "business_day");
+    params.set("shipping_options[0][shipping_rate_data][delivery_estimate][minimum][value]", "1");
+    params.set("shipping_options[0][shipping_rate_data][delivery_estimate][maximum][unit]", "business_day");
+    params.set("shipping_options[0][shipping_rate_data][delivery_estimate][maximum][value]", "3");
+
+    params.set("shipping_options[1][shipping_rate_data][type]", "fixed_amount");
+    params.set("shipping_options[1][shipping_rate_data][fixed_amount][amount]", "0");
+    params.set("shipping_options[1][shipping_rate_data][fixed_amount][currency]", "eur");
+    params.set("shipping_options[1][shipping_rate_data][display_name]", "Local pickup in Kasterlee — by appointment");
     params.set("metadata[inventory]", JSON.stringify(items.map(({ product, quantity }) => [product.id, quantity])));
     items.forEach(({ product, quantity }, index) => {
       params.set(`line_items[${index}][quantity]`, String(quantity));
