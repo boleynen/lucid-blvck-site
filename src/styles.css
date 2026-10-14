@@ -1737,9 +1737,9 @@ footer.shop-footer {
 }
 
 .shop-policy-heading h1 {
-  max-width: 900px;
+  max-width: 720px;
   margin: 0;
-  font: 700 clamp(44px, 7vw, 104px)/.92 "Cinzel Decorative", Georgia, serif;
+  font: 700 clamp(30px, 3.8vw, 56px)/.98 "Cinzel Decorative", Georgia, serif;
   letter-spacing: -.055em;
 }
 
