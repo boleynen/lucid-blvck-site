@@ -139,7 +139,7 @@ function Header({ cartCount = 0, onCartOpen }) {
           <Link to="/flash" className={onFlash ? "active" : ""}>Flash</Link>
           <Link to="/tattoo-gallery" className={onGallery ? "active" : ""}>Tattoo gallery</Link>
           <Link to="/#about">About</Link>
-          <Link to="/shop" className="shop-entry">Lucid Entom <ArrowUpRight /></Link>
+          <Link to="/shop" className="shop-entry"><span className="shop-entry-label"><strong>Lucid Entom</strong><small>Webshop</small></span><ArrowUpRight /></Link>
         </>}
         {onShop && <button type="button" className="shop-cart-trigger" onClick={onCartOpen}>
           <ShoppingBag /> Cart <span>{cartCount}</span>
