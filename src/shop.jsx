@@ -32,7 +32,7 @@ function ShopFooter({ Link }) {
   </footer>;
 }
 
-export function Shop({ products, Link, onAdd }) {
+export function Shop({ products, loading, error, onRetry, Link, onAdd }) {
   return (
     <>
     <main className="objects-shop" id="top">
@@ -42,7 +42,18 @@ export function Shop({ products, Link, onAdd }) {
           <p>{products.length} unique {products.length === 1 ? "work" : "works"}</p>
         </div>
         <p className="shop-shipping-notice">Currently accepting orders within Belgium only. <Link to="/shop/shipping">Shipping info →</Link></p>
-        {products.length ? (
+        {loading && !products.length ? (
+          <div className="shop-loading" role="status" aria-live="polite">
+            <span>Loading collection</span>
+            <div><i /><i /><i /></div>
+          </div>
+        ) : error && !products.length ? (
+          <div className="shop-empty shop-load-error">
+            <p>Connection interrupted</p>
+            <h2>The collection could not be loaded.</h2>
+            <button type="button" onClick={onRetry}>Try again</button>
+          </div>
+        ) : products.length ? (
           <div className="shop-grid">
             {products.map((product, index) => (
               <article className="shop-card" key={product.id}>
@@ -79,7 +90,8 @@ export function Shop({ products, Link, onAdd }) {
   );
 }
 
-export function ShopProduct({ product, Link, onAdd }) {
+export function ShopProduct({ product, loading, Link, onAdd }) {
+  if (loading && !product) return <><main className="shop-missing shop-product-loading"><p>Loading artwork…</p></main><ShopFooter Link={Link} /></>;
   if (!product) return <><main className="shop-missing"><p>Specimen unavailable.</p><Link to="/shop">Return to the collection</Link></main><ShopFooter Link={Link} /></>;
   return (
     <>

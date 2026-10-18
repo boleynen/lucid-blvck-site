@@ -82,7 +82,16 @@ async function loadGallery() {
 }
 async function loadProducts() {
   if (!databaseConfigured) return [];
-  return fetchShopProducts();
+  let lastError;
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      return await fetchShopProducts();
+    } catch (error) {
+      lastError = error;
+      if (attempt < 2) await new Promise((resolve) => setTimeout(resolve, 700 * (attempt + 1)));
+    }
+  }
+  throw lastError;
 }
 function go(path) {
   history.pushState({}, "", path);
@@ -1144,6 +1153,8 @@ function App() {
     [remote, setRemote] = useState([]),
     [gallery, setGallery] = useState([]),
     [products, setProducts] = useState([]),
+    [productsLoading, setProductsLoading] = useState(true),
+    [productsError, setProductsError] = useState(false),
     [cartOpen, setCartOpen] = useState(false),
     [cart, setCart] = useState(() => { try { return JSON.parse(localStorage.getItem("lucid-entom-cart")) || []; } catch { return []; } });
   const refresh = async () => {
@@ -1161,10 +1172,15 @@ function App() {
     }
   };
   const refreshProducts = async () => {
+    setProductsLoading(true);
+    setProductsError(false);
     try {
       setProducts(await loadProducts());
     } catch (e) {
       console.error(e);
+      setProductsError(true);
+    } finally {
+      setProductsLoading(false);
     }
   };
   useEffect(() => {
@@ -1193,7 +1209,7 @@ function App() {
       ) : path === "/tattoo-gallery" ? (
         <TattooGallery items={gallery} />
       ) : path === "/shop" ? (
-        <Shop products={products} Link={Link} onAdd={addToCart} />
+        <Shop products={products} loading={productsLoading} error={productsError} onRetry={refreshProducts} Link={Link} onAdd={addToCart} />
       ) : path === "/shop/shipping" ? (
         <ShippingInfo Link={Link} />
       ) : path === "/checkout/success" ? (
@@ -1208,13 +1224,13 @@ function App() {
           onProductsChanged={refreshProducts}
         />
       ) : path.startsWith("/shop/") ? (
-        <ShopProduct product={products.find((x) => x.id === path.split("/").pop())} Link={Link} onAdd={addToCart} />
+        <ShopProduct product={products.find((x) => x.id === path.split("/").pop())} loading={productsLoading} Link={Link} onAdd={addToCart} />
       ) : path.startsWith("/flash/") ? (
         <Detail item={items.find((x) => x.id === path.split("/").pop())} />
       ) : (
         <Missing />
       ),
-    [path, remote, gallery, products, cart],
+    [path, remote, gallery, products, productsLoading, productsError, cart],
   );
   return (
     <>

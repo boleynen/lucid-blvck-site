@@ -995,6 +995,15 @@ nav > a.active {
 .shop-empty { min-height: 360px; display: flex; flex-direction: column; justify-content: center; padding: 40px; border: 1px solid #d8e2dc2b; }
 .shop-empty p { color: var(--shop-acid); font-size: 10px; text-transform: uppercase; letter-spacing: .16em; }
 .shop-empty h2 { max-width: 680px; font-size: clamp(38px, 5vw, 76px); }
+.shop-loading { min-height: 360px; display: flex; flex-direction: column; justify-content: center; gap: 24px; padding: 40px; border: 1px solid #d8e2dc2b; color: #bc8da0; font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+.shop-loading > div { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.shop-loading i { display: block; height: 4px; background: #bc8da0; opacity: .18; animation: shop-loading-pulse 1.2s ease-in-out infinite; }
+.shop-loading i:nth-child(2) { animation-delay: .16s; }
+.shop-loading i:nth-child(3) { animation-delay: .32s; }
+.shop-load-error button { width: fit-content; margin-top: 22px; padding: 13px 18px; border: 1px solid #bc8da0; background: transparent; color: #d8e2dc; font-size: 10px; font-weight: 600; letter-spacing: .13em; text-transform: uppercase; cursor: pointer; }
+.shop-product-loading p { color: #bc8da0; font-size: 10px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+@keyframes shop-loading-pulse { 0%, 100% { opacity: .16; } 50% { opacity: .75; } }
+@media (prefers-reduced-motion: reduce) { .shop-loading i { animation: none; } }
 .shop-note { padding: 36px var(--pad) 70px; background: var(--shop-ink); color: var(--shop-paper); }
 .shop-back { display: inline-flex; align-items: center; gap: 8px; border-bottom: 1px solid currentColor; padding-bottom: 6px; font-size: 9px; letter-spacing: .15em; text-transform: uppercase; }
 .shop-back svg { width: 14px; height: 14px; }
