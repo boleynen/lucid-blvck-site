@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { PhotoGallery } from "./photos.jsx";
 import { ArrowUpRight, ChevronLeft, Minus, Plus, ShoppingBag, X } from "lucide-react";
 
@@ -33,13 +33,32 @@ function ShopFooter({ Link }) {
 }
 
 export function Shop({ products, loading, error, onRetry, Link, onAdd }) {
+  const [sort, setSort] = useState("featured");
+  const sortedProducts = useMemo(() => {
+    const sorted = [...products];
+    if (sort === "price-asc") sorted.sort((a, b) => a.price_cents - b.price_cents);
+    if (sort === "price-desc") sorted.sort((a, b) => b.price_cents - a.price_cents);
+    if (sort === "name") sorted.sort((a, b) => a.title.localeCompare(b.title, "en", { sensitivity: "base" }));
+    return sorted;
+  }, [products, sort]);
   return (
     <>
     <main className="objects-shop" id="top">
       <section className="shop-collection" id="collection">
         <div className="shop-section-head">
           <div><span>01</span><p>Available specimens</p></div>
-          <p>{products.length} unique {products.length === 1 ? "work" : "works"}</p>
+          <div className="shop-section-tools">
+            <p>{products.length} unique {products.length === 1 ? "work" : "works"}</p>
+            <label className="shop-sort">
+              <span>Sort</span>
+              <select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort shop items">
+                <option value="featured">Featured</option>
+                <option value="price-asc">Price: low to high</option>
+                <option value="price-desc">Price: high to low</option>
+                <option value="name">Name: A–Z</option>
+              </select>
+            </label>
+          </div>
         </div>
         <p className="shop-shipping-notice">Currently accepting orders within Belgium only. <Link to="/shop/shipping">Shipping info →</Link></p>
         {loading && !products.length ? (
@@ -55,7 +74,7 @@ export function Shop({ products, loading, error, onRetry, Link, onAdd }) {
           </div>
         ) : products.length ? (
           <div className="shop-grid">
-            {products.map((product, index) => (
+            {sortedProducts.map((product, index) => (
               <article className="shop-card" key={product.id}>
                 <Link to={`/shop/${product.id}`} className="shop-card-image">
                   <img src={product.image_url} alt={product.title} />
