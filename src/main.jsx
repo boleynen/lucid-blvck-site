@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import {
   ArrowUpRight,
   ChevronLeft,
+  ChevronUp,
+  ChevronDown,
   Menu,
   X,
   Plus,
@@ -582,6 +584,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
     [shopPhotos, setShopPhotos] = useState([]),
     [shopCover, setShopCover] = useState(""),
     [shopUploading, setShopUploading] = useState(false),
+    [shopReordering, setShopReordering] = useState(false),
     [shopMessage, setShopMessage] = useState(""),
     [editingShopItem, setEditingShopItem] = useState(null),
     [editShopForm, setEditShopForm] = useState({ title: "", description: "", price: "", dimensions: "", shipping: "", stock: "1" }),
@@ -820,6 +823,23 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
       setShopMessage(error.message);
     }
   };
+  const moveShopProduct = async (index, direction) => {
+    const targetIndex = index + direction;
+    if (shopReordering || targetIndex < 0 || targetIndex >= products.length) return;
+    const reordered = [...products];
+    [reordered[index], reordered[targetIndex]] = [reordered[targetIndex], reordered[index]];
+    setShopReordering(true);
+    setShopMessage("Saving new shop order…");
+    try {
+      await Promise.all(reordered.map((item, position) => updateShopProduct(item.id, { sort_order: reordered.length - position })));
+      await onProductsChanged();
+      setShopMessage("Shop order updated.");
+    } catch (error) {
+      setShopMessage(error.message);
+    } finally {
+      setShopReordering(false);
+    }
+  };
   const openShopEditor = (item) => {
     setEditingShopItem(item);
     setEditShopForm({
@@ -1038,7 +1058,7 @@ function Admin({ remote, gallery, products, onChanged, onGalleryChanged, onProdu
           {shopMessage && <p className="form-message">{shopMessage}</p>}
         </form>
         <PublishedWorks count={products.length}>
-          {products.map((item) => <div key={item.id}><img src={item.image_url} alt="" /><Link className="admin-item-link" to={`/shop/${item.id}`}>{item.title} · €{(item.price_cents / 100).toFixed(2)} · Stock {item.stock_quantity}</Link><div className="admin-list-actions"><button aria-label={`Edit ${item.title}`} onClick={() => openShopEditor(item)}><Pencil /></button><button aria-label={`Delete ${item.title}`} onClick={() => removeShopProduct(item)}><Trash2 /></button></div></div>)}
+          {products.map((item, index) => <div key={item.id}><img src={item.image_url} alt="" /><Link className="admin-item-link" to={`/shop/${item.id}`}>{item.title} · €{(item.price_cents / 100).toFixed(2)} · Stock {item.stock_quantity}</Link><div className="admin-list-actions admin-order-actions"><button type="button" aria-label={`Move ${item.title} up`} title="Move up" disabled={shopReordering || index === 0} onClick={() => moveShopProduct(index, -1)}><ChevronUp /></button><button type="button" aria-label={`Move ${item.title} down`} title="Move down" disabled={shopReordering || index === products.length - 1} onClick={() => moveShopProduct(index, 1)}><ChevronDown /></button><button type="button" aria-label={`Edit ${item.title}`} onClick={() => openShopEditor(item)}><Pencil /></button><button type="button" aria-label={`Delete ${item.title}`} onClick={() => removeShopProduct(item)}><Trash2 /></button></div></div>)}
           {!products.length && <p className="empty">No shop objects published yet.</p>}
         </PublishedWorks>
         </div>}

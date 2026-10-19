@@ -513,6 +513,8 @@ footer a {
 .admin-item-link:focus-visible { border-bottom-color: currentColor; }
 .admin-list-actions { display: flex; gap: 8px; }
 .admin-list-actions button { padding: 11px; cursor: pointer; }
+.admin-list-actions button:disabled { opacity: .25; cursor: default; }
+.admin-order-actions button:nth-child(-n+2) { border-color: #8b867c; }
 .admin-list-actions svg { width: 16px; height: 16px; }
 .admin-edit-backdrop {
   position: fixed;
